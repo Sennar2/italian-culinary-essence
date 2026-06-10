@@ -1,0 +1,86 @@
+import { createFileRoute, Outlet, Link, useNavigate } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { meIsAdmin, claimFirstAdmin } from "@/lib/api/admin.functions";
+import { toast } from "sonner";
+import { Logo } from "@/components/site/Logo";
+
+export const Route = createFileRoute("/_authenticated/admin")({
+  component: AdminLayout,
+});
+
+function AdminLayout() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const isAdminFn = useServerFn(meIsAdmin);
+  const claimFn = useServerFn(claimFirstAdmin);
+  const { data, isLoading } = useQuery({ queryKey: ["me-is-admin"], queryFn: () => isAdminFn() });
+
+  async function onSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
+  async function onClaim() {
+    try {
+      const res = await claimFn();
+      if (res.granted) {
+        toast.success("You are now the admin.");
+        queryClient.invalidateQueries({ queryKey: ["me-is-admin"] });
+      } else {
+        toast.error(res.reason ?? "Could not grant admin");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
+    }
+  }
+
+  return (
+    <div className="min-h-dvh flex flex-col bg-cream">
+      <header className="bg-forest text-cream border-b border-cream/10">
+        <div className="container-icc flex items-center justify-between py-4">
+          <Logo variant="light" />
+          <div className="flex items-center gap-3 text-sm">
+            <Link to="/" className="text-cream/70 hover:text-gold">View site</Link>
+            <button onClick={onSignOut} className="text-cream/70 hover:text-gold">Sign out</button>
+          </div>
+        </div>
+      </header>
+      <div className="flex-1 container-icc py-10 grid gap-10 lg:grid-cols-[220px_1fr]">
+        <aside className="space-y-1 text-sm">
+          <p className="eyebrow mb-3">Admin</p>
+          <SideLink to="/admin">Dashboard</SideLink>
+          <SideLink to="/admin/chapters">Chapters</SideLink>
+          <SideLink to="/admin/enquiries">Enquiries</SideLink>
+        </aside>
+        <main>
+          {!isLoading && data && !data.isAdmin && (
+            <div className="mb-6 border border-gold bg-cream p-5">
+              <p className="text-sm">You're signed in but not yet an admin.</p>
+              <button onClick={onClaim} className="mt-3 text-[11px] tracking-[0.22em] uppercase bg-forest text-cream px-4 py-2 hover:bg-forest-deep">
+                Claim admin (first user only)
+              </button>
+            </div>
+          )}
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function SideLink({ to, children }: { to: "/admin" | "/admin/chapters" | "/admin/enquiries"; children: React.ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="block px-3 py-2 text-foreground hover:bg-secondary"
+      activeProps={{ className: "block px-3 py-2 bg-forest text-cream" }}
+      activeOptions={{ exact: true }}
+    >
+      {children}
+    </Link>
+  );
+}

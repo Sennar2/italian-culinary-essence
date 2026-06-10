@@ -5,17 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * ICC International — design system.
+ * Forest #0F3D2E · Gold #B99A5D · Cream #F8F6F2 · Charcoal #222 · Italian flag accents.
  */
 
 @theme inline {
@@ -59,42 +50,68 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-forest: var(--forest);
+  --color-forest-deep: var(--forest-deep);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-cream: var(--cream);
+  --color-charcoal: var(--charcoal);
+  --color-it-green: var(--it-green);
+  --color-it-white: var(--it-white);
+  --color-it-red: var(--it-red);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.25rem;
+  --font-display: "Cormorant Garamond", "Canela", "Playfair Display", ui-serif, Georgia, serif;
+  --font-sans: "Inter", "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand */
+  --forest: oklch(0.32 0.06 155);          /* #0F3D2E */
+  --forest-deep: oklch(0.24 0.05 155);
+  --gold: oklch(0.71 0.09 80);             /* #B99A5D */
+  --gold-soft: oklch(0.86 0.06 85);
+  --cream: oklch(0.974 0.008 85);          /* #F8F6F2 */
+  --charcoal: oklch(0.22 0 0);             /* #222 */
+  --it-green: oklch(0.55 0.16 150);
+  --it-white: oklch(0.97 0.005 110);
+  --it-red: oklch(0.55 0.22 27);
+
+  /* Semantic */
+  --background: var(--cream);
+  --foreground: var(--charcoal);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: var(--charcoal);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --popover-foreground: var(--charcoal);
+  --primary: var(--forest);
+  --primary-foreground: var(--cream);
+  --secondary: oklch(0.94 0.01 85);
+  --secondary-foreground: var(--forest);
+  --muted: oklch(0.94 0.008 85);
+  --muted-foreground: oklch(0.45 0.01 85);
+  --accent: var(--gold);
+  --accent-foreground: var(--forest);
+  --destructive: oklch(0.55 0.22 27);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.88 0.012 85);
+  --input: oklch(0.88 0.012 85);
+  --ring: var(--gold);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --sidebar: var(--forest);
+  --sidebar-foreground: var(--cream);
+  --sidebar-primary: var(--gold);
+  --sidebar-primary-foreground: var(--forest);
+  --sidebar-accent: var(--forest-deep);
+  --sidebar-accent-foreground: var(--cream);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--gold);
 }
 
 .dark {
@@ -140,5 +157,55 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    font-weight: 500;
+  }
+
+  ::selection {
+    background: var(--color-forest);
+    color: var(--color-cream);
+  }
+}
+
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-weight: 500;
+}
+
+@utility flag-rule {
+  display: inline-flex;
+  width: 4.5rem;
+  height: 2px;
+  background: linear-gradient(to right,
+    var(--color-it-green) 0 33%,
+    var(--color-it-white) 33% 66%,
+    var(--color-it-red) 66% 100%
+  );
+}
+
+@utility container-icc {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .container-icc { padding-inline: 2rem; }
+}
+@media (min-width: 1280px) {
+  .container-icc { padding-inline: 3rem; }
   }
 }
