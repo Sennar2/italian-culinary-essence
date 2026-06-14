@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
@@ -28,10 +29,9 @@ function buildList(table: Table, orderBy: string, ascending = true) {
     .handler(async ({ context }) => {
       await guard(context.userId);
       const sb = await admin();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (sb as any).from(table).select("*").order(orderBy, { ascending });
       if (error) throw error;
-      return (data ?? []) as Record<string, unknown>[];
+      return (data ?? []) as any[];
     });
 }
 
@@ -45,7 +45,6 @@ function buildSave(table: Table, schema: z.ZodType<Record<string, unknown> & { i
       const payload = { ...(data as Record<string, unknown>) };
       const id = payload.id as string | undefined;
       delete payload.id;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const tbl = (sb as any).from(table);
       if (id) {
         const { error } = await tbl.update(payload).eq("id", id);
@@ -65,7 +64,6 @@ function buildDelete(table: Table) {
     .handler(async ({ data, context }) => {
       await guard(context.userId);
       const sb = await admin();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (sb as any).from(table).delete().eq("id", data.id);
       if (error) throw error;
       return { ok: true };
@@ -184,7 +182,7 @@ export const adminGetSettings = createServerFn({ method: "GET" })
     const sb = await admin();
     const { data, error } = await sb.from("site_settings").select("data").eq("id", 1).maybeSingle();
     if (error) throw error;
-    return (data?.data ?? {}) as Record<string, unknown>;
+    return (data?.data ?? {}) as any;
   });
 
 export const adminSaveSettings = createServerFn({ method: "POST" })
@@ -193,7 +191,7 @@ export const adminSaveSettings = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await guard(context.userId);
     const sb = await admin();
-    const { error } = await sb.from("site_settings").upsert({ id: 1, data: data.data });
+    const { error } = await sb.from("site_settings").upsert({ id: 1, data: data.data as any });
     if (error) throw error;
     return { ok: true };
   });
