@@ -22,19 +22,20 @@ type Table =
   | "leadership" | "events" | "news" | "initiatives"
   | "partners" | "academy_items" | "testimonials";
 
-function buildList<T extends Table>(table: T, orderBy: string, ascending = true) {
+function buildList(table: Table, orderBy: string, ascending = true) {
   return createServerFn({ method: "GET" })
     .middleware([requireSupabaseAuth])
     .handler(async ({ context }) => {
       await guard(context.userId);
       const sb = await admin();
-      const { data, error } = await sb.from(table).select("*").order(orderBy, { ascending });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (sb as any).from(table).select("*").order(orderBy, { ascending });
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as Record<string, unknown>[];
     });
 }
 
-function buildSave<T extends Table>(table: T, schema: z.ZodType<Record<string, unknown> & { id?: string }>) {
+function buildSave(table: Table, schema: z.ZodType<Record<string, unknown> & { id?: string }>) {
   return createServerFn({ method: "POST" })
     .middleware([requireSupabaseAuth])
     .inputValidator((d: unknown) => schema.parse(d))
@@ -44,25 +45,28 @@ function buildSave<T extends Table>(table: T, schema: z.ZodType<Record<string, u
       const payload = { ...(data as Record<string, unknown>) };
       const id = payload.id as string | undefined;
       delete payload.id;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const tbl = (sb as any).from(table);
       if (id) {
-        const { error } = await sb.from(table).update(payload).eq("id", id);
+        const { error } = await tbl.update(payload).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await sb.from(table).insert(payload);
+        const { error } = await tbl.insert(payload);
         if (error) throw error;
       }
       return { ok: true };
     });
 }
 
-function buildDelete<T extends Table>(table: T) {
+function buildDelete(table: Table) {
   return createServerFn({ method: "POST" })
     .middleware([requireSupabaseAuth])
     .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
     .handler(async ({ data, context }) => {
       await guard(context.userId);
       const sb = await admin();
-      const { error } = await sb.from(table).delete().eq("id", data.id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (sb as any).from(table).delete().eq("id", data.id);
       if (error) throw error;
       return { ok: true };
     });
