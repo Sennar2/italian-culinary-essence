@@ -51,10 +51,22 @@ function AdminLayout() {
       </header>
       <div className="flex-1 container-icc py-10 grid gap-10 lg:grid-cols-[220px_1fr]">
         <aside className="space-y-1 text-sm">
-          <p className="eyebrow mb-3">Admin</p>
+          <p className="eyebrow mb-3">Overview</p>
           <SideLink to="/admin">Dashboard</SideLink>
+
+          <p className="eyebrow mt-6 mb-3">Content</p>
           <SideLink to="/admin/chapters">Chapters</SideLink>
+          <SideLink to="/admin/leadership">Leadership</SideLink>
+          <SideLink to="/admin/news">News</SideLink>
+          <SideLink to="/admin/events">Events</SideLink>
+          <SideLink to="/admin/initiatives">Initiatives</SideLink>
+          <SideLink to="/admin/academy">Academy</SideLink>
+          <SideLink to="/admin/partners">Partners</SideLink>
+          <SideLink to="/admin/testimonials">Testimonials</SideLink>
+
+          <p className="eyebrow mt-6 mb-3">System</p>
           <SideLink to="/admin/enquiries">Enquiries</SideLink>
+          <SideLink to="/admin/settings">Site settings</SideLink>
         </aside>
         <main>
           {!isLoading && data && !data.isAdmin && (
@@ -72,10 +84,10 @@ function AdminLayout() {
   );
 }
 
-function SideLink({ to, children }: { to: "/admin" | "/admin/chapters" | "/admin/enquiries"; children: React.ReactNode }) {
+function SideLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <Link
-      to={to}
+      to={to as never}
       className="block px-3 py-2 text-foreground hover:bg-secondary"
       activeProps={{ className: "block px-3 py-2 bg-forest text-cream" }}
       activeOptions={{ exact: true }}
