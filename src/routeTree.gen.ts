@@ -26,8 +26,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChaptersSlugRouteImport } from './routes/chapters.$slug'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminTestimonialsRouteImport } from './routes/_authenticated/admin.testimonials'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
+import { Route as AuthenticatedAdminNewsRouteImport } from './routes/_authenticated/admin.news'
+import { Route as AuthenticatedAdminLeadershipRouteImport } from './routes/_authenticated/admin.leadership'
+import { Route as AuthenticatedAdminInitiativesRouteImport } from './routes/_authenticated/admin.initiatives'
+import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminEnquiriesRouteImport } from './routes/_authenticated/admin.enquiries'
 import { Route as AuthenticatedAdminChaptersRouteImport } from './routes/_authenticated/admin.chapters'
+import { Route as AuthenticatedAdminAcademyRouteImport } from './routes/_authenticated/admin.academy'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -113,6 +121,47 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminTestimonialsRoute =
+  AuthenticatedAdminTestimonialsRouteImport.update({
+    id: '/testimonials',
+    path: '/testimonials',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPartnersRoute =
+  AuthenticatedAdminPartnersRouteImport.update({
+    id: '/partners',
+    path: '/partners',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminNewsRoute = AuthenticatedAdminNewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminLeadershipRoute =
+  AuthenticatedAdminLeadershipRouteImport.update({
+    id: '/leadership',
+    path: '/leadership',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminInitiativesRoute =
+  AuthenticatedAdminInitiativesRouteImport.update({
+    id: '/initiatives',
+    path: '/initiatives',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminEventsRoute =
+  AuthenticatedAdminEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminEnquiriesRoute =
   AuthenticatedAdminEnquiriesRouteImport.update({
     id: '/enquiries',
@@ -123,6 +172,12 @@ const AuthenticatedAdminChaptersRoute =
   AuthenticatedAdminChaptersRouteImport.update({
     id: '/chapters',
     path: '/chapters',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAcademyRoute =
+  AuthenticatedAdminAcademyRouteImport.update({
+    id: '/academy',
+    path: '/academy',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 
@@ -142,8 +197,16 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/chapters/$slug': typeof ChaptersSlugRoute
+  '/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersRoute
   '/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
+  '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
+  '/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
+  '/admin/news': typeof AuthenticatedAdminNewsRoute
+  '/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -161,8 +224,16 @@ export interface FileRoutesByTo {
   '/partners': typeof PartnersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/chapters/$slug': typeof ChaptersSlugRoute
+  '/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersRoute
   '/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
+  '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
+  '/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
+  '/admin/news': typeof AuthenticatedAdminNewsRoute
+  '/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -183,8 +254,16 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/chapters/$slug': typeof ChaptersSlugRoute
+  '/_authenticated/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/_authenticated/admin/chapters': typeof AuthenticatedAdminChaptersRoute
   '/_authenticated/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
+  '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/_authenticated/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
+  '/_authenticated/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
+  '/_authenticated/admin/news': typeof AuthenticatedAdminNewsRoute
+  '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -205,8 +284,16 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin'
     | '/chapters/$slug'
+    | '/admin/academy'
     | '/admin/chapters'
     | '/admin/enquiries'
+    | '/admin/events'
+    | '/admin/initiatives'
+    | '/admin/leadership'
+    | '/admin/news'
+    | '/admin/partners'
+    | '/admin/settings'
+    | '/admin/testimonials'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -224,8 +311,16 @@ export interface FileRouteTypes {
     | '/partners'
     | '/sitemap.xml'
     | '/chapters/$slug'
+    | '/admin/academy'
     | '/admin/chapters'
     | '/admin/enquiries'
+    | '/admin/events'
+    | '/admin/initiatives'
+    | '/admin/leadership'
+    | '/admin/news'
+    | '/admin/partners'
+    | '/admin/settings'
+    | '/admin/testimonials'
     | '/admin'
   id:
     | '__root__'
@@ -245,8 +340,16 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/chapters/$slug'
+    | '/_authenticated/admin/academy'
     | '/_authenticated/admin/chapters'
     | '/_authenticated/admin/enquiries'
+    | '/_authenticated/admin/events'
+    | '/_authenticated/admin/initiatives'
+    | '/_authenticated/admin/leadership'
+    | '/_authenticated/admin/news'
+    | '/_authenticated/admin/partners'
+    | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/testimonials'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -388,6 +491,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/testimonials': {
+      id: '/_authenticated/admin/testimonials'
+      path: '/testimonials'
+      fullPath: '/admin/testimonials'
+      preLoaderRoute: typeof AuthenticatedAdminTestimonialsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/partners': {
+      id: '/_authenticated/admin/partners'
+      path: '/partners'
+      fullPath: '/admin/partners'
+      preLoaderRoute: typeof AuthenticatedAdminPartnersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/news': {
+      id: '/_authenticated/admin/news'
+      path: '/news'
+      fullPath: '/admin/news'
+      preLoaderRoute: typeof AuthenticatedAdminNewsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/leadership': {
+      id: '/_authenticated/admin/leadership'
+      path: '/leadership'
+      fullPath: '/admin/leadership'
+      preLoaderRoute: typeof AuthenticatedAdminLeadershipRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/initiatives': {
+      id: '/_authenticated/admin/initiatives'
+      path: '/initiatives'
+      fullPath: '/admin/initiatives'
+      preLoaderRoute: typeof AuthenticatedAdminInitiativesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/events': {
+      id: '/_authenticated/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/enquiries': {
       id: '/_authenticated/admin/enquiries'
       path: '/enquiries'
@@ -402,18 +554,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminChaptersRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/academy': {
+      id: '/_authenticated/admin/academy'
+      path: '/academy'
+      fullPath: '/admin/academy'
+      preLoaderRoute: typeof AuthenticatedAdminAcademyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAcademyRoute: typeof AuthenticatedAdminAcademyRoute
   AuthenticatedAdminChaptersRoute: typeof AuthenticatedAdminChaptersRoute
   AuthenticatedAdminEnquiriesRoute: typeof AuthenticatedAdminEnquiriesRoute
+  AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
+  AuthenticatedAdminInitiativesRoute: typeof AuthenticatedAdminInitiativesRoute
+  AuthenticatedAdminLeadershipRoute: typeof AuthenticatedAdminLeadershipRoute
+  AuthenticatedAdminNewsRoute: typeof AuthenticatedAdminNewsRoute
+  AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminTestimonialsRoute: typeof AuthenticatedAdminTestimonialsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAcademyRoute: AuthenticatedAdminAcademyRoute,
   AuthenticatedAdminChaptersRoute: AuthenticatedAdminChaptersRoute,
   AuthenticatedAdminEnquiriesRoute: AuthenticatedAdminEnquiriesRoute,
+  AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
+  AuthenticatedAdminInitiativesRoute: AuthenticatedAdminInitiativesRoute,
+  AuthenticatedAdminLeadershipRoute: AuthenticatedAdminLeadershipRoute,
+  AuthenticatedAdminNewsRoute: AuthenticatedAdminNewsRoute,
+  AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminTestimonialsRoute: AuthenticatedAdminTestimonialsRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
