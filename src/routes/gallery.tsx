@@ -29,7 +29,7 @@ function GalleryPage() {
   const items = data as { id: string; image_url: string; title?: string | null; caption?: string | null; featured?: boolean }[];
   return (
     <>
-      <PageHeader eyebrow="Gallery" title="Moments from the Consortium" subtitle="A visual journey through ICC's events, masterclasses and chapters." />
+      <PageHeader eyebrow="Gallery" title="Moments from the Consortium" intro="A visual journey through ICC's events, masterclasses and chapters." />
       <section className="bg-cream">
         <div className="container-icc py-12 md:py-16">
           {items.length === 0 ? (
