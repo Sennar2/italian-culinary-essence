@@ -54,6 +54,15 @@ function AdminLayout() {
           <p className="eyebrow mb-3">Overview</p>
           <SideLink to="/admin">Dashboard</SideLink>
 
+          <p className="eyebrow mt-6 mb-3">Website</p>
+          <SideLink to="/admin/website/hero">Hero</SideLink>
+          <SideLink to="/admin/website/banner">Banner</SideLink>
+          <SideLink to="/admin/website/gallery">Gallery</SideLink>
+          <SideLink to="/admin/website/featured">Featured images</SideLink>
+          <SideLink to="/admin/website/nav">Navigation</SideLink>
+          <SideLink to="/admin/website/footer">Footer</SideLink>
+          <SideLink to="/admin/website/contact">Contact details</SideLink>
+
           <p className="eyebrow mt-6 mb-3">Content</p>
           <SideLink to="/admin/chapters">Chapters</SideLink>
           <SideLink to="/admin/leadership">Leadership</SideLink>

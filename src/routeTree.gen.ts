@@ -26,6 +26,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChaptersSlugRouteImport } from './routes/chapters.$slug'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminWebsiteRouteImport } from './routes/_authenticated/admin.website'
 import { Route as AuthenticatedAdminTestimonialsRouteImport } from './routes/_authenticated/admin.testimonials'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
@@ -36,6 +37,15 @@ import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminEnquiriesRouteImport } from './routes/_authenticated/admin.enquiries'
 import { Route as AuthenticatedAdminChaptersRouteImport } from './routes/_authenticated/admin.chapters'
 import { Route as AuthenticatedAdminAcademyRouteImport } from './routes/_authenticated/admin.academy'
+import { Route as AuthenticatedAdminWebsiteIndexRouteImport } from './routes/_authenticated/admin.website.index'
+import { Route as AuthenticatedAdminWebsiteNavRouteImport } from './routes/_authenticated/admin.website.nav'
+import { Route as AuthenticatedAdminWebsiteHeroRouteImport } from './routes/_authenticated/admin.website.hero'
+import { Route as AuthenticatedAdminWebsiteGalleryRouteImport } from './routes/_authenticated/admin.website.gallery'
+import { Route as AuthenticatedAdminWebsiteFooterRouteImport } from './routes/_authenticated/admin.website.footer'
+import { Route as AuthenticatedAdminWebsiteFeaturedRouteImport } from './routes/_authenticated/admin.website.featured'
+import { Route as AuthenticatedAdminWebsiteContactRouteImport } from './routes/_authenticated/admin.website.contact'
+import { Route as AuthenticatedAdminWebsiteChaptersRouteImport } from './routes/_authenticated/admin.website.chapters'
+import { Route as AuthenticatedAdminWebsiteBannerRouteImport } from './routes/_authenticated/admin.website.banner'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -121,6 +131,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminWebsiteRoute =
+  AuthenticatedAdminWebsiteRouteImport.update({
+    id: '/website',
+    path: '/website',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminTestimonialsRoute =
   AuthenticatedAdminTestimonialsRouteImport.update({
     id: '/testimonials',
@@ -180,6 +196,60 @@ const AuthenticatedAdminAcademyRoute =
     path: '/academy',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminWebsiteIndexRoute =
+  AuthenticatedAdminWebsiteIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
+const AuthenticatedAdminWebsiteNavRoute =
+  AuthenticatedAdminWebsiteNavRouteImport.update({
+    id: '/nav',
+    path: '/nav',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
+const AuthenticatedAdminWebsiteHeroRoute =
+  AuthenticatedAdminWebsiteHeroRouteImport.update({
+    id: '/hero',
+    path: '/hero',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
+const AuthenticatedAdminWebsiteGalleryRoute =
+  AuthenticatedAdminWebsiteGalleryRouteImport.update({
+    id: '/gallery',
+    path: '/gallery',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
+const AuthenticatedAdminWebsiteFooterRoute =
+  AuthenticatedAdminWebsiteFooterRouteImport.update({
+    id: '/footer',
+    path: '/footer',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
+const AuthenticatedAdminWebsiteFeaturedRoute =
+  AuthenticatedAdminWebsiteFeaturedRouteImport.update({
+    id: '/featured',
+    path: '/featured',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
+const AuthenticatedAdminWebsiteContactRoute =
+  AuthenticatedAdminWebsiteContactRouteImport.update({
+    id: '/contact',
+    path: '/contact',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
+const AuthenticatedAdminWebsiteChaptersRoute =
+  AuthenticatedAdminWebsiteChaptersRouteImport.update({
+    id: '/chapters',
+    path: '/chapters',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
+const AuthenticatedAdminWebsiteBannerRoute =
+  AuthenticatedAdminWebsiteBannerRouteImport.update({
+    id: '/banner',
+    path: '/banner',
+    getParentRoute: () => AuthenticatedAdminWebsiteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -207,7 +277,17 @@ export interface FileRoutesByFullPath {
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
+  '/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/website/banner': typeof AuthenticatedAdminWebsiteBannerRoute
+  '/admin/website/chapters': typeof AuthenticatedAdminWebsiteChaptersRoute
+  '/admin/website/contact': typeof AuthenticatedAdminWebsiteContactRoute
+  '/admin/website/featured': typeof AuthenticatedAdminWebsiteFeaturedRoute
+  '/admin/website/footer': typeof AuthenticatedAdminWebsiteFooterRoute
+  '/admin/website/gallery': typeof AuthenticatedAdminWebsiteGalleryRoute
+  '/admin/website/hero': typeof AuthenticatedAdminWebsiteHeroRoute
+  '/admin/website/nav': typeof AuthenticatedAdminWebsiteNavRoute
+  '/admin/website/': typeof AuthenticatedAdminWebsiteIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -235,6 +315,15 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/website/banner': typeof AuthenticatedAdminWebsiteBannerRoute
+  '/admin/website/chapters': typeof AuthenticatedAdminWebsiteChaptersRoute
+  '/admin/website/contact': typeof AuthenticatedAdminWebsiteContactRoute
+  '/admin/website/featured': typeof AuthenticatedAdminWebsiteFeaturedRoute
+  '/admin/website/footer': typeof AuthenticatedAdminWebsiteFooterRoute
+  '/admin/website/gallery': typeof AuthenticatedAdminWebsiteGalleryRoute
+  '/admin/website/hero': typeof AuthenticatedAdminWebsiteHeroRoute
+  '/admin/website/nav': typeof AuthenticatedAdminWebsiteNavRoute
+  '/admin/website': typeof AuthenticatedAdminWebsiteIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -264,7 +353,17 @@ export interface FileRoutesById {
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
+  '/_authenticated/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/website/banner': typeof AuthenticatedAdminWebsiteBannerRoute
+  '/_authenticated/admin/website/chapters': typeof AuthenticatedAdminWebsiteChaptersRoute
+  '/_authenticated/admin/website/contact': typeof AuthenticatedAdminWebsiteContactRoute
+  '/_authenticated/admin/website/featured': typeof AuthenticatedAdminWebsiteFeaturedRoute
+  '/_authenticated/admin/website/footer': typeof AuthenticatedAdminWebsiteFooterRoute
+  '/_authenticated/admin/website/gallery': typeof AuthenticatedAdminWebsiteGalleryRoute
+  '/_authenticated/admin/website/hero': typeof AuthenticatedAdminWebsiteHeroRoute
+  '/_authenticated/admin/website/nav': typeof AuthenticatedAdminWebsiteNavRoute
+  '/_authenticated/admin/website/': typeof AuthenticatedAdminWebsiteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -294,7 +393,17 @@ export interface FileRouteTypes {
     | '/admin/partners'
     | '/admin/settings'
     | '/admin/testimonials'
+    | '/admin/website'
     | '/admin/'
+    | '/admin/website/banner'
+    | '/admin/website/chapters'
+    | '/admin/website/contact'
+    | '/admin/website/featured'
+    | '/admin/website/footer'
+    | '/admin/website/gallery'
+    | '/admin/website/hero'
+    | '/admin/website/nav'
+    | '/admin/website/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -322,6 +431,15 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/testimonials'
     | '/admin'
+    | '/admin/website/banner'
+    | '/admin/website/chapters'
+    | '/admin/website/contact'
+    | '/admin/website/featured'
+    | '/admin/website/footer'
+    | '/admin/website/gallery'
+    | '/admin/website/hero'
+    | '/admin/website/nav'
+    | '/admin/website'
   id:
     | '__root__'
     | '/'
@@ -350,7 +468,17 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/partners'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/testimonials'
+    | '/_authenticated/admin/website'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/website/banner'
+    | '/_authenticated/admin/website/chapters'
+    | '/_authenticated/admin/website/contact'
+    | '/_authenticated/admin/website/featured'
+    | '/_authenticated/admin/website/footer'
+    | '/_authenticated/admin/website/gallery'
+    | '/_authenticated/admin/website/hero'
+    | '/_authenticated/admin/website/nav'
+    | '/_authenticated/admin/website/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -491,6 +619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/website': {
+      id: '/_authenticated/admin/website'
+      path: '/website'
+      fullPath: '/admin/website'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/testimonials': {
       id: '/_authenticated/admin/testimonials'
       path: '/testimonials'
@@ -561,8 +696,105 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAcademyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/website/': {
+      id: '/_authenticated/admin/website/'
+      path: '/'
+      fullPath: '/admin/website/'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
+    '/_authenticated/admin/website/nav': {
+      id: '/_authenticated/admin/website/nav'
+      path: '/nav'
+      fullPath: '/admin/website/nav'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteNavRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
+    '/_authenticated/admin/website/hero': {
+      id: '/_authenticated/admin/website/hero'
+      path: '/hero'
+      fullPath: '/admin/website/hero'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteHeroRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
+    '/_authenticated/admin/website/gallery': {
+      id: '/_authenticated/admin/website/gallery'
+      path: '/gallery'
+      fullPath: '/admin/website/gallery'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteGalleryRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
+    '/_authenticated/admin/website/footer': {
+      id: '/_authenticated/admin/website/footer'
+      path: '/footer'
+      fullPath: '/admin/website/footer'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteFooterRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
+    '/_authenticated/admin/website/featured': {
+      id: '/_authenticated/admin/website/featured'
+      path: '/featured'
+      fullPath: '/admin/website/featured'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteFeaturedRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
+    '/_authenticated/admin/website/contact': {
+      id: '/_authenticated/admin/website/contact'
+      path: '/contact'
+      fullPath: '/admin/website/contact'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteContactRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
+    '/_authenticated/admin/website/chapters': {
+      id: '/_authenticated/admin/website/chapters'
+      path: '/chapters'
+      fullPath: '/admin/website/chapters'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteChaptersRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
+    '/_authenticated/admin/website/banner': {
+      id: '/_authenticated/admin/website/banner'
+      path: '/banner'
+      fullPath: '/admin/website/banner'
+      preLoaderRoute: typeof AuthenticatedAdminWebsiteBannerRouteImport
+      parentRoute: typeof AuthenticatedAdminWebsiteRoute
+    }
   }
 }
+
+interface AuthenticatedAdminWebsiteRouteChildren {
+  AuthenticatedAdminWebsiteBannerRoute: typeof AuthenticatedAdminWebsiteBannerRoute
+  AuthenticatedAdminWebsiteChaptersRoute: typeof AuthenticatedAdminWebsiteChaptersRoute
+  AuthenticatedAdminWebsiteContactRoute: typeof AuthenticatedAdminWebsiteContactRoute
+  AuthenticatedAdminWebsiteFeaturedRoute: typeof AuthenticatedAdminWebsiteFeaturedRoute
+  AuthenticatedAdminWebsiteFooterRoute: typeof AuthenticatedAdminWebsiteFooterRoute
+  AuthenticatedAdminWebsiteGalleryRoute: typeof AuthenticatedAdminWebsiteGalleryRoute
+  AuthenticatedAdminWebsiteHeroRoute: typeof AuthenticatedAdminWebsiteHeroRoute
+  AuthenticatedAdminWebsiteNavRoute: typeof AuthenticatedAdminWebsiteNavRoute
+  AuthenticatedAdminWebsiteIndexRoute: typeof AuthenticatedAdminWebsiteIndexRoute
+}
+
+const AuthenticatedAdminWebsiteRouteChildren: AuthenticatedAdminWebsiteRouteChildren =
+  {
+    AuthenticatedAdminWebsiteBannerRoute: AuthenticatedAdminWebsiteBannerRoute,
+    AuthenticatedAdminWebsiteChaptersRoute:
+      AuthenticatedAdminWebsiteChaptersRoute,
+    AuthenticatedAdminWebsiteContactRoute:
+      AuthenticatedAdminWebsiteContactRoute,
+    AuthenticatedAdminWebsiteFeaturedRoute:
+      AuthenticatedAdminWebsiteFeaturedRoute,
+    AuthenticatedAdminWebsiteFooterRoute: AuthenticatedAdminWebsiteFooterRoute,
+    AuthenticatedAdminWebsiteGalleryRoute:
+      AuthenticatedAdminWebsiteGalleryRoute,
+    AuthenticatedAdminWebsiteHeroRoute: AuthenticatedAdminWebsiteHeroRoute,
+    AuthenticatedAdminWebsiteNavRoute: AuthenticatedAdminWebsiteNavRoute,
+    AuthenticatedAdminWebsiteIndexRoute: AuthenticatedAdminWebsiteIndexRoute,
+  }
+
+const AuthenticatedAdminWebsiteRouteWithChildren =
+  AuthenticatedAdminWebsiteRoute._addFileChildren(
+    AuthenticatedAdminWebsiteRouteChildren,
+  )
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAcademyRoute: typeof AuthenticatedAdminAcademyRoute
@@ -575,6 +807,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminTestimonialsRoute: typeof AuthenticatedAdminTestimonialsRoute
+  AuthenticatedAdminWebsiteRoute: typeof AuthenticatedAdminWebsiteRouteWithChildren
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -589,6 +822,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminTestimonialsRoute: AuthenticatedAdminTestimonialsRoute,
+  AuthenticatedAdminWebsiteRoute: AuthenticatedAdminWebsiteRouteWithChildren,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
