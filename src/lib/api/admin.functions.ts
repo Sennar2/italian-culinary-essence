@@ -40,14 +40,17 @@ const chapterSchema = z.object({
   region: z.string().max(80).nullable().optional(),
   president: z.string().max(160).nullable().optional(),
   email: z.string().email().max(160).nullable().optional(),
+  contact_email: z.string().email().max(160).nullable().optional(),
+  address: z.string().max(400).nullable().optional(),
   phone: z.string().max(40).nullable().optional(),
   lat: z.number().nullable().optional(),
   lng: z.number().nullable().optional(),
-  hero_image: z.string().max(200).nullable().optional(),
+  hero_image: z.string().max(1500).nullable().optional(),
   summary: z.string().max(2000).nullable().optional(),
   featured: z.boolean().optional(),
   sort_order: z.number().int().optional(),
   published: z.boolean().optional(),
+  active: z.boolean().optional(),
 });
 
 export const adminListChapters = createServerFn({ method: "GET" })
