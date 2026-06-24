@@ -287,7 +287,7 @@ function Impact() {
   );
 }
 
-function MapSection({ chapters }: { chapters: Awaited<ReturnType<typeof getChapters>> }) {
+function MapSection({ chapters }: { chapters: Awaited<ReturnType<typeof getActiveChapters>> }) {
   return (
     <section className="bg-cream border-t border-border/60">
       <div className="container-icc py-16 md:py-24">
@@ -310,8 +310,8 @@ function MapSection({ chapters }: { chapters: Awaited<ReturnType<typeof getChapt
 }
 
 /* ---------------- CHAPTERS ---------------- */
-function Chapters({ chapters }: { chapters: Awaited<ReturnType<typeof getChapters>> }) {
-  const featured = chapters.filter((c) => c.featured).slice(0, 6);
+function Chapters({ chapters }: { chapters: Awaited<ReturnType<typeof getActiveChapters>> }) {
+  const featured = chapters.filter((c: { featured?: boolean }) => c.featured).slice(0, 6);
   return (
     <section className="bg-cream border-t border-border/60">
       <div className="container-icc py-16 md:py-24">
@@ -332,7 +332,7 @@ function Chapters({ chapters }: { chapters: Awaited<ReturnType<typeof getChapter
         </div>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((c) => {
+          {featured.map((c: { slug: string; city: string; country: string; hero_image?: string | null }) => {
             const src = resolveImage(c.hero_image);
             return (
               <Link
