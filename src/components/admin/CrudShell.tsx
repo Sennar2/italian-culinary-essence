@@ -3,16 +3,18 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import { ImageUploader } from "./ImageUploader";
 
 export type FieldDef = {
   name: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "checkbox" | "datetime" | "email" | "url" | "select";
+  type?: "text" | "textarea" | "number" | "checkbox" | "datetime" | "email" | "url" | "select" | "image";
   required?: boolean;
   placeholder?: string;
   options?: { value: string; label: string }[];
   full?: boolean;
   rows?: number;
+  folder?: string;
 };
 
 export type ColumnDef = { key: string; label: string; render?: (v: unknown, row: Record<string, unknown>) => React.ReactNode };
@@ -139,6 +141,13 @@ function FieldEl({ f, value, onChange }: { f: FieldDef; value: unknown; onChange
       <label className={`${cls} flex-row items-center self-end pb-2 normal-case tracking-normal text-sm text-foreground`}>
         <input type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)} /> {f.label}
       </label>
+    );
+  }
+  if (f.type === "image") {
+    return (
+      <div className={`${full ? "sm:col-span-2" : ""}`}>
+        <ImageUploader value={(value as string | null) ?? null} onChange={(v) => onChange(v)} folder={f.folder ?? "uploads"} label={f.label} />
+      </div>
     );
   }
   let input: React.ReactNode = null;

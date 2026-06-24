@@ -5,6 +5,7 @@ import { useState } from "react";
 import { adminListChapters, adminSaveChapter, adminDeleteChapter } from "@/lib/api/admin.functions";
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 
 export const Route = createFileRoute("/_authenticated/admin/chapters")({
   component: AdminChapters,
@@ -18,6 +19,8 @@ type Row = {
   region?: string | null;
   president?: string | null;
   email?: string | null;
+  contact_email?: string | null;
+  address?: string | null;
   phone?: string | null;
   lat?: number | null;
   lng?: number | null;
@@ -26,9 +29,10 @@ type Row = {
   featured?: boolean;
   sort_order?: number;
   published?: boolean;
+  active?: boolean;
 };
 
-const empty: Row = { slug: "", city: "", country: "", region: "", featured: false, published: true, sort_order: 0 };
+const empty: Row = { slug: "", city: "", country: "", region: "", featured: false, published: true, active: true, sort_order: 0 };
 
 function AdminChapters() {
   const qc = useQueryClient();
@@ -99,12 +103,18 @@ function AdminChapters() {
               <Field label="Region"><input value={editing.region ?? ""} onChange={(e) => setEditing({ ...editing, region: e.target.value })} className="input" /></Field>
               <Field label="President"><input value={editing.president ?? ""} onChange={(e) => setEditing({ ...editing, president: e.target.value })} className="input" /></Field>
               <Field label="Email"><input type="email" value={editing.email ?? ""} onChange={(e) => setEditing({ ...editing, email: e.target.value })} className="input" /></Field>
+              <Field label="Contact email"><input type="email" value={editing.contact_email ?? ""} onChange={(e) => setEditing({ ...editing, contact_email: e.target.value })} className="input" /></Field>
+              <Field label="Address" className="sm:col-span-2"><input value={editing.address ?? ""} onChange={(e) => setEditing({ ...editing, address: e.target.value })} className="input" /></Field>
               <Field label="Latitude"><input type="number" step="0.0001" value={editing.lat ?? ""} onChange={(e) => setEditing({ ...editing, lat: e.target.value === "" ? null : Number(e.target.value) })} className="input" /></Field>
               <Field label="Longitude"><input type="number" step="0.0001" value={editing.lng ?? ""} onChange={(e) => setEditing({ ...editing, lng: e.target.value === "" ? null : Number(e.target.value) })} className="input" /></Field>
-              <Field label="Hero image key" className="sm:col-span-2"><input value={editing.hero_image ?? ""} onChange={(e) => setEditing({ ...editing, hero_image: e.target.value })} placeholder="e.g. chapter-rome or full URL" className="input" /></Field>
+              <div className="sm:col-span-2">
+                <ImageUploader value={editing.hero_image ?? null} onChange={(v) => setEditing({ ...editing, hero_image: v })} folder="chapters" label="Chapter hero image" />
+              </div>
               <Field label="Summary" className="sm:col-span-2"><textarea rows={3} value={editing.summary ?? ""} onChange={(e) => setEditing({ ...editing, summary: e.target.value })} className="input resize-none" /></Field>
               <Field label="Sort order"><input type="number" value={editing.sort_order ?? 0} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} className="input" /></Field>
               <label className="flex items-center gap-2 text-sm self-end pb-2"><input type="checkbox" checked={!!editing.featured} onChange={(e) => setEditing({ ...editing, featured: e.target.checked })} /> Featured on homepage</label>
+              <label className="flex items-center gap-2 text-sm self-end pb-2"><input type="checkbox" checked={editing.active !== false} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} /> Active (shown on map)</label>
+              <label className="flex items-center gap-2 text-sm self-end pb-2"><input type="checkbox" checked={editing.published !== false} onChange={(e) => setEditing({ ...editing, published: e.target.checked })} /> Published</label>
 
               <div className="sm:col-span-2 mt-2 flex items-center justify-end gap-3">
                 <button type="button" onClick={() => setEditing(null)} className="text-sm text-muted-foreground hover:text-foreground">Cancel</button>

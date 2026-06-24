@@ -1,60 +1,94 @@
-# Admin Dashboard — Expansion Plan
+## Goal
 
-Today the admin only has Chapters CRUD + an Enquiries inbox. This plan turns `/admin` into a complete content management surface for the whole public site.
+Make the entire ICC public website editable from the admin portal. Replace all hardcoded copy, images, contact details, nav, footer, and map data with admin-managed content. Keep the existing visual design (cream/forest/gold, serif type, tricolore accents) untouched.
 
-## 1. Dashboard home (`/admin`)
-Replace the two-card placeholder with a real overview:
-- Stat tiles: # chapters, # leadership, # upcoming events, # published news, # initiatives, # partners, # new enquiries (last 30 days), # newsletter subs.
-- "Recent enquiries" panel (latest 5 across membership + contact, with type badge and timestamp).
-- "Quick actions": New chapter / New news / New event / New leader.
-- All numbers come from one new server fn `adminDashboardStats` (admin-gated).
+## 1. Storage + database
 
-## 2. New CRUD sections
-Each follows the same pattern already used by `admin.chapters.tsx`: list table → side drawer/modal form → zod-validated server fn → toast + invalidate. Published/unpublished toggle + sort order on every entity.
+**New storage bucket**: `media` (public read, admin-only write). Used for every uploaded image (hero, banner, gallery, featured, chapter covers, partner logos, leadership portraits, news/event covers, academy covers).
 
-| Route | Entity | Notable fields |
-|---|---|---|
-| `/admin/leadership` | `leadership` | name, role, chapter, bio, photo, sort_order, published |
-| `/admin/events` | `events` | title, slug, starts_at, ends_at, city, country, chapter_id, cover, summary, body, registration_url, featured, published |
-| `/admin/news` | `news` | title, slug, excerpt, body (textarea), cover, author, published_at, tags, featured, published |
-| `/admin/initiatives` | `initiatives` | title, slug, summary, body, cover, sort_order, published |
-| `/admin/partners` | `partners` | name, tier (enum), logo, website, sort_order, published |
-| `/admin/academy` | `academy_items` | title, kind, cover, summary, url, sort_order, published |
-| `/admin/testimonials` | `testimonials` | quote, author, role, location, photo, sort_order, published |
-| `/admin/settings` | `site_settings` | key/value editor for global strings (hero copy, contact email, social links) |
+**Schema migration** — new tables (all with admin-only write policies, public-read where the public site reads them):
 
-The existing `/admin/enquiries` stays; add CSV export buttons per inbox and a "mark read" flag (new column).
+- `gallery_images` — title, caption, image_url, sort_order, featured, published
+- `nav_links` — label, url, sort_order, active, external, location ('header' | 'footer_quick' | 'footer_programme' | 'footer_legal'), social_platform (for footer socials)
+- `banners` — title, subtitle, event_date (timestamptz), location, cta_label, cta_url, image_url, enabled, sort_order (supports future multi-banner; v1 renders the first enabled)
+- `featured_images` — page_key (unique: home, about, academy, events, membership, news, partners, leadership, chapters, contact), image_url, alt
+- `page_content` — page_key + section_key composite unique, title, subtitle, body, image_url (extensible per-page strings)
 
-## 3. Media uploads
-Create a public `media` storage bucket (admin-only writes via service role). Add a reusable `<ImageUploader>` component used in every form (cover, photo, logo). Stores public URL on the row.
+**Extend `site_settings`** keys (already a flexible key/value table):
+- `hero_eyebrow`, `hero_title`, `hero_subtitle`, `hero_image`, `hero_background_image`
+- `hero_cta_primary_label`, `hero_cta_primary_url`, `hero_cta_secondary_label`, `hero_cta_secondary_url`
+- `footer_description`, `footer_copyright`, `contact_address`, `contact_phone`, `contact_email`, `press_email`
+- `instagram_url`, `linkedin_url`, `youtube_url`, `facebook_url`, `x_url`
+- `credit_label` = "Website designed & developed by Honeysuckles Design", `credit_url` = "https://honeysucklesdesign.uk"
 
-## 4. Admin shell upgrades
-- Sidebar: grouped sections (Content / People / Inbox / Settings), collapsible on mobile (shadcn sidebar).
-- Header: breadcrumb + current user email + sign out.
-- Mobile: sidebar becomes a sheet.
-- Empty states + skeleton loaders on every list.
-- Toast feedback consistent (sonner).
-- Confirm dialog for deletes (shadcn AlertDialog).
+**Seed defaults** (migration, not fake data):
+- `hero_title` = "Italian Culinary Consortium", `hero_subtitle` = "Celebrating Italian Excellence Worldwide"
+- `footer_description` = same tagline
+- `footer_copyright` = "© {year} Italian Culinary Consortium"
+- Clear the placeholder Rome address and `+39 06 1234 567` from any seeded rows
+- `featured_images` rows for all 10 page keys with NULL image_url (fallback art used until admin uploads)
 
-## 5. Server functions (technical)
-New file `src/lib/api/admin-content.functions.ts` exposing per-entity:
-`adminList<X>`, `adminSave<X>` (insert or update by id), `adminDelete<X>`, `adminTogglePublished<X>`. All use `requireSupabaseAuth` + `has_role('admin')` guard. Service-role client loaded inside handlers only.
+**Chapters** — table already exists with city/country/lat/lng/president/hero_image. Add columns: `address` (text, nullable), `contact_email`, `active` (boolean, default true). Public map filters `active = true`.
 
-New `adminDashboardStats` and `adminMarkEnquiryRead` server fns.
+## 2. Admin portal — "Website Settings" hub
 
-## 6. Migration
-One migration:
-- Add `read_at timestamptz` to `contact_messages` and `membership_enquiries`.
-- Create `media` storage bucket (public read, admin write policy via `has_role`).
-- No other schema changes — tables already exist.
+New route `/admin/website` with a tabbed shell. Each tab is its own sub-route so deep links work:
 
-## 7. Out of scope (kept for later)
-Rich text editor (use plain textarea + markdown for now), audit log, role management UI, image cropping, scheduled publishing, bulk import, analytics charts.
+```
+/admin/website/hero        — Hero copy, CTAs, hero image, background image (with ImageUploader)
+/admin/website/banner      — Banner list + edit (enable toggle, image optional)
+/admin/website/gallery     — Drag-to-reorder grid, upload, caption, featured toggle, delete
+/admin/website/featured    — One row per page_key with ImageUploader + alt text
+/admin/website/chapters    — Existing chapters CRUD extended with address/contact_email/active
+/admin/website/nav         — Header + footer link groups, reorderable
+/admin/website/footer      — Footer description, copyright, social URLs, contact block
+/admin/website/contact     — Contact + press emails, head office address, phone
+```
 
-## Build order
-1. Migration + media bucket.
-2. Sidebar shell + dashboard stats page.
-3. Reusable `<AdminTable>`, `<AdminForm>`, `<ImageUploader>`, `<ConfirmDelete>` primitives.
-4. CRUD routes in this order: leadership → news → events → initiatives → partners → academy → testimonials → settings.
-5. Enquiries: read flag + CSV export.
-6. Mobile QA at 390px.
+Existing `/admin/{chapters,leadership,events,news,initiatives,academy,partners,testimonials,settings,enquiries}` stay; the sidebar gets a new "Website" group linking to the eight tabs above. The standalone `/admin/settings` remains as the raw key/value editor for power users.
+
+**New reusable components**:
+- `ImageUploader` — drag/drop or click, uploads to `media` bucket via a server fn that calls `supabaseAdmin.storage`, returns public URL, supports clear/remove.
+- `SortableList` — lightweight up/down arrows (no extra dep) to set `sort_order` on gallery, nav, banners.
+
+## 3. Public site rewiring
+
+Replace every hardcoded string/image used by the public site with admin data. New `public-content.functions.ts` reads expand to include: `getHero`, `getBanner`, `getGallery`, `getFeaturedImage(pageKey)`, `getNavLinks(location)`, `getFooterContent`, `getActiveChapters`. All are unauthenticated server fns using the publishable server client + narrow `TO anon` SELECT policies.
+
+Routes updated:
+- `src/routes/index.tsx` — hero pulls from settings + uploaded images (fallbacks: existing `hero-pasta.jpg` + cream wash). Banner renders above-the-fold if enabled. Gallery section added to homepage.
+- `src/components/site/SiteHeader.tsx` — nav from `nav_links` where location='header' and active=true, ordered by sort_order. Fallback = current static array.
+- `src/components/site/SiteFooter.tsx` — description, link columns, socials, contact block, copyright, Honeysuckles credit all from admin. Removes the hardcoded `Via di Villa Emiliani, Roma` / `+39 06 1234 567` lines.
+- `src/components/site/WorldMap.tsx` — accepts active chapters only; the page already passes chapters in.
+- `src/routes/{about,academy,events,membership,news,partners}.tsx` — header art reads `featured_images` by page_key, falls back to existing imported asset.
+- New `/gallery` route + homepage gallery teaser.
+
+## 4. Fallback policy
+
+When admin content is missing: render the existing static copy/imagery already in the repo (hero title, page eyebrows, current page heroes). Never invent statistics, locations, phone numbers, testimonials, or addresses. Empty contact field → hide that line entirely. Empty banner → render nothing. Empty gallery → hide section.
+
+## 5. Out of scope (v1)
+
+- Rich text editor (textareas with markdown only)
+- Image cropping / multi-size variants
+- Scheduled publishing
+- Drag-and-drop reorder (use up/down buttons)
+- i18n / multi-language
+- Per-article featured images for news/events beyond the existing `cover` field already in those tables
+
+## 6. Build order
+
+1. Migration: new tables, chapter columns, site_settings seed cleanup, `media` bucket + RLS.
+2. `ImageUploader` + storage upload server fn.
+3. `/admin/website/*` tabs, sidebar grouping.
+4. Public reads (`public-content.functions.ts` additions) + rewire `SiteHeader`, `SiteFooter`, `index.tsx` hero/banner/gallery, page featured images, WorldMap active filter.
+5. New `/gallery` route.
+6. Mobile QA at 390px, verify fallbacks when DB rows are empty.
+
+## Technical notes
+
+- All admin mutations: `createServerFn` + `requireSupabaseAuth` + `has_role(uid,'admin')` guard, same pattern as existing `admin-content.functions.ts`.
+- Image uploads: server fn accepts base64 + filename, writes via `supabaseAdmin.storage.from('media').upload(...)`, returns public URL stored as plain text in the consuming row.
+- Public reads: server publishable client (anon key, no session) — not `supabaseAdmin` — to avoid the `Expected 3 parts in JWT` Data API failure.
+- Nav/footer link tables share a single `nav_links` table discriminated by `location` to keep the admin UI uniform.
+- `featured_images.page_key` is unique → upsert pattern in the admin form.

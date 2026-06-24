@@ -6,22 +6,30 @@ import { StatCounter } from "@/components/site/StatCounter";
 import { WorldMap } from "@/components/site/WorldMap";
 import { resolveImage } from "@/lib/chapter-images";
 import {
-  getChapters,
   getInitiatives,
   getTestimonials,
 } from "@/lib/api/public-content.functions";
+import {
+  getActiveChapters,
+  getSiteSettings,
+  getActiveBanner,
+  getGallery,
+} from "@/lib/api/website.functions";
 import heroPasta from "@/assets/hero-pasta.jpg";
 import initiativesChef from "@/assets/initiatives-chef.jpg";
 
 const homeQuery = queryOptions({
   queryKey: ["home-content"],
   queryFn: async () => {
-    const [chapters, initiatives, testimonials] = await Promise.all([
-      getChapters(),
+    const [chapters, initiatives, testimonials, settings, banner, gallery] = await Promise.all([
+      getActiveChapters(),
       getInitiatives(),
       getTestimonials(),
+      getSiteSettings(),
+      getActiveBanner(),
+      getGallery(),
     ]);
-    return { chapters, initiatives, testimonials };
+    return { chapters, initiatives, testimonials, settings, banner, gallery };
   },
 });
 
@@ -44,11 +52,13 @@ function Home() {
   const { data } = useSuspenseQuery(homeQuery);
   return (
     <>
-      <Hero />
+      {data.banner && <BannerStrip banner={data.banner} />}
+      <Hero settings={data.settings} />
       <Mission />
       <Impact />
       <MapSection chapters={data.chapters} />
       <Chapters chapters={data.chapters} />
+      {data.gallery.length > 0 && <GallerySection items={data.gallery} />}
       <Initiatives initiatives={data.initiatives} />
       <Testimonials testimonials={data.testimonials} />
       <CtaBand />
@@ -57,35 +67,37 @@ function Home() {
 }
 
 /* ---------------- HERO ---------------- */
-function Hero() {
+type Settings = Record<string, string>;
+
+function Hero({ settings }: { settings: Settings }) {
+  const eyebrow = settings.hero_eyebrow?.trim() || "2026";
+  const titleRaw = settings.hero_title?.trim();
+  const subtitle = settings.hero_subtitle?.trim() || "The Italian Culinary Consortium International promotes, protects and values authentic Italian culinary culture and its excellence across the globe.";
+  const heroImage = settings.hero_image?.trim() || heroPasta;
+  const bg = settings.hero_background_image?.trim();
+  const primaryLabel = settings.hero_cta_primary_label?.trim() || "Our Initiatives";
+  const primaryUrl = settings.hero_cta_primary_url?.trim() || "/initiatives";
+  const secondaryLabel = settings.hero_cta_secondary_label?.trim() || "Become a Member";
+  const secondaryUrl = settings.hero_cta_secondary_url?.trim() || "/membership";
   return (
     <section className="relative overflow-hidden bg-cream">
-      <div className="container-icc grid items-center gap-10 lg:gap-16 py-10 md:py-16 lg:py-20 lg:grid-cols-[1.05fr_1.2fr]">
+      {bg && (
+        <div className="absolute inset-0 -z-0">
+          <img src={bg} alt="" className="h-full w-full object-cover opacity-20" />
+          <div className="absolute inset-0 bg-cream/80" />
+        </div>
+      )}
+      <div className="relative container-icc grid items-center gap-10 lg:gap-16 py-10 md:py-16 lg:py-20 lg:grid-cols-[1.05fr_1.2fr]">
         <div className="relative order-2 lg:order-1">
-          <p className="font-display text-3xl text-gold/90">2026</p>
+          <p className="font-display text-3xl text-gold/90">{eyebrow}</p>
           <FlagRule className="mt-4" />
           <h1 className="mt-6 font-display text-4xl leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-[64px]">
-            Safeguarding the Authenticity of Italian Cuisine{" "}
-            <em className="italic text-forest">Worldwide</em>
+            {titleRaw || (<>Italian Culinary Consortium{" "}<em className="italic text-forest">International</em></>)}
           </h1>
-          <p className="mt-6 max-w-xl text-base md:text-[17px] leading-relaxed text-muted-foreground">
-            The Italian Culinary Consortium International promotes, protects and values
-            authentic Italian culinary culture and its excellence across the globe.
-          </p>
+          <p className="mt-6 max-w-xl text-base md:text-[17px] leading-relaxed text-muted-foreground">{subtitle}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/initiatives"
-              className="group inline-flex items-center gap-3 bg-forest text-cream px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-forest-deep transition-colors"
-            >
-              Our Initiatives
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link
-              to="/membership"
-              className="inline-flex items-center bg-transparent border border-forest text-forest px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-forest hover:text-cream transition-colors"
-            >
-              Become a Member
-            </Link>
+            <CtaLink url={primaryUrl} primary>{primaryLabel}</CtaLink>
+            <CtaLink url={secondaryUrl}>{secondaryLabel}</CtaLink>
           </div>
         </div>
 
@@ -100,8 +112,8 @@ function Hero() {
               <path d="M 50 0 C 0 200, 0 400, 50 600" stroke="var(--color-gold)" strokeWidth="1" fill="none" />
             </svg>
             <img
-              src={heroPasta}
-              alt="Authentic Italian fettuccine with basil, cherry tomatoes and parmesan"
+              src={heroImage}
+              alt={titleRaw || "Italian Culinary Consortium hero"}
               width={1600}
               height={1200}
               className="h-full w-full object-cover"
@@ -109,6 +121,79 @@ function Hero() {
             />
           </div>
           <Seal />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CtaLink({ url, primary, children }: { url: string; primary?: boolean; children: React.ReactNode }) {
+  const cls = primary
+    ? "group inline-flex items-center gap-3 bg-forest text-cream px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-forest-deep transition-colors"
+    : "inline-flex items-center bg-transparent border border-forest text-forest px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-forest hover:text-cream transition-colors";
+  const external = /^https?:/i.test(url);
+  if (external) {
+    return <a href={url} className={cls} target="_blank" rel="noopener noreferrer">{children}{primary && <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />}</a>;
+  }
+  return <Link to={url as never} className={cls}>{children}{primary && <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />}</Link>;
+}
+
+/* ---------------- BANNER ---------------- */
+function BannerStrip({ banner }: { banner: { title: string; subtitle?: string | null; event_date?: string | null; location?: string | null; cta_label?: string | null; cta_url?: string | null; image_url?: string | null } }) {
+  const date = banner.event_date ? new Date(banner.event_date) : null;
+  const dateText = date ? date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" }) : "";
+  const timeText = date ? date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }) : "";
+  const meta = [dateText, timeText, banner.location].filter(Boolean).join(" · ");
+  return (
+    <section className="bg-forest text-cream border-b border-cream/10">
+      <div className="container-icc grid gap-6 py-5 md:py-6 md:grid-cols-[1fr_auto] md:items-center">
+        <div className="flex items-start gap-5">
+          {banner.image_url && (
+            <img src={banner.image_url} alt="" className="hidden md:block h-16 w-16 object-cover" />
+          )}
+          <div>
+            <p className="font-display text-lg md:text-xl text-cream leading-tight">{banner.title}</p>
+            {banner.subtitle && <p className="mt-1 text-sm text-cream/75">{banner.subtitle}</p>}
+            {meta && <p className="mt-1 text-[11px] tracking-[0.22em] uppercase text-gold">{meta}</p>}
+          </div>
+        </div>
+        {banner.cta_label && banner.cta_url && (
+          <a href={banner.cta_url} className="self-start md:self-center inline-flex items-center bg-gold text-forest px-5 py-3 text-[11px] tracking-[0.22em] uppercase hover:bg-gold/90">
+            {banner.cta_label} <ArrowRight className="ml-2 h-3.5 w-3.5" />
+          </a>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- GALLERY (homepage teaser) ---------------- */
+function GallerySection({ items }: { items: { id: string; image_url: string; title?: string | null; caption?: string | null }[] }) {
+  const shown = items.slice(0, 8);
+  return (
+    <section className="bg-cream border-t border-border/60">
+      <div className="container-icc py-16 md:py-24">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div>
+            <Eyebrow>Gallery</Eyebrow>
+            <h2 className="mt-4 font-display text-3xl md:text-5xl text-foreground">Moments from the Consortium</h2>
+          </div>
+          <Link to="/gallery" className="self-start inline-flex items-center gap-3 border border-gold text-forest px-6 py-3 text-[11px] tracking-[0.22em] uppercase hover:bg-gold transition-colors">
+            View full gallery <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+        <div className="mt-10 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {shown.map((g) => (
+            <figure key={g.id} className="group relative overflow-hidden aspect-square bg-forest/5">
+              <img src={g.image_url} alt={g.title ?? g.caption ?? ""} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              {(g.title || g.caption) && (
+                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-forest/95 to-transparent p-3 text-cream">
+                  {g.title && <p className="text-sm font-display">{g.title}</p>}
+                  {g.caption && <p className="text-[10px] tracking-[0.18em] uppercase text-cream/80">{g.caption}</p>}
+                </figcaption>
+              )}
+            </figure>
+          ))}
         </div>
       </div>
     </section>
@@ -202,7 +287,7 @@ function Impact() {
   );
 }
 
-function MapSection({ chapters }: { chapters: Awaited<ReturnType<typeof getChapters>> }) {
+function MapSection({ chapters }: { chapters: Awaited<ReturnType<typeof getActiveChapters>> }) {
   return (
     <section className="bg-cream border-t border-border/60">
       <div className="container-icc py-16 md:py-24">
@@ -225,8 +310,8 @@ function MapSection({ chapters }: { chapters: Awaited<ReturnType<typeof getChapt
 }
 
 /* ---------------- CHAPTERS ---------------- */
-function Chapters({ chapters }: { chapters: Awaited<ReturnType<typeof getChapters>> }) {
-  const featured = chapters.filter((c) => c.featured).slice(0, 6);
+function Chapters({ chapters }: { chapters: Awaited<ReturnType<typeof getActiveChapters>> }) {
+  const featured = chapters.filter((c: { featured?: boolean }) => c.featured).slice(0, 6);
   return (
     <section className="bg-cream border-t border-border/60">
       <div className="container-icc py-16 md:py-24">
@@ -247,7 +332,7 @@ function Chapters({ chapters }: { chapters: Awaited<ReturnType<typeof getChapter
         </div>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((c) => {
+          {featured.map((c: { slug: string; city: string; country: string; hero_image?: string | null }) => {
             const src = resolveImage(c.hero_image);
             return (
               <Link

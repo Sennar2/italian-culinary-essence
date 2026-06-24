@@ -59,10 +59,58 @@ export type Database = {
         }
         Relationships: []
       }
+      banners: {
+        Row: {
+          created_at: string
+          cta_label: string | null
+          cta_url: string | null
+          enabled: boolean
+          event_date: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          sort_order: number
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          enabled?: boolean
+          event_date?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          sort_order?: number
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          enabled?: boolean
+          event_date?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chapters: {
         Row: {
+          active: boolean
+          address: string | null
           body: string | null
           city: string
+          contact_email: string | null
           country: string
           created_at: string
           email: string | null
@@ -82,8 +130,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          active?: boolean
+          address?: string | null
           body?: string | null
           city: string
+          contact_email?: string | null
           country: string
           created_at?: string
           email?: string | null
@@ -103,8 +154,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          active?: boolean
+          address?: string | null
           body?: string | null
           city?: string
+          contact_email?: string | null
           country?: string
           created_at?: string
           email?: string | null
@@ -205,6 +259,69 @@ export type Database = {
           starts_at?: string | null
           status?: string
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      featured_images: {
+        Row: {
+          alt: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          page_key: string
+          updated_at: string
+        }
+        Insert: {
+          alt?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          page_key: string
+          updated_at?: string
+        }
+        Update: {
+          alt?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          page_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gallery_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          featured: boolean
+          id: string
+          image_url: string
+          published: boolean
+          sort_order: number
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: string
+          image_url: string
+          published?: boolean
+          sort_order?: number
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: string
+          image_url?: string
+          published?: boolean
+          sort_order?: number
+          title?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -329,6 +446,45 @@ export type Database = {
           name?: string
           organisation?: string | null
           tier?: string | null
+        }
+        Relationships: []
+      }
+      nav_links: {
+        Row: {
+          active: boolean
+          created_at: string
+          external: boolean
+          id: string
+          label: string
+          location: string
+          social_platform: string | null
+          sort_order: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          external?: boolean
+          id?: string
+          label: string
+          location?: string
+          social_platform?: string | null
+          sort_order?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          external?: boolean
+          id?: string
+          label?: string
+          location?: string
+          social_platform?: string | null
+          sort_order?: number
+          updated_at?: string
+          url?: string
         }
         Relationships: []
       }
