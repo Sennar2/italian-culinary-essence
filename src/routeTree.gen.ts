@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PodcastsRouteImport } from './routes/podcasts'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as MembershipRouteImport } from './routes/membership'
@@ -51,6 +52,11 @@ import { Route as AuthenticatedAdminWebsiteBannerRouteImport } from './routes/_a
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodcastsRoute = PodcastsRouteImport.update({
+  id: '/podcasts',
+  path: '/podcasts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -271,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/membership': typeof MembershipRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
+  '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/chapters/$slug': typeof ChaptersSlugRoute
@@ -310,6 +317,7 @@ export interface FileRoutesByTo {
   '/membership': typeof MembershipRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
+  '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/admin/academy': typeof AuthenticatedAdminAcademyRoute
@@ -349,6 +357,7 @@ export interface FileRoutesById {
   '/membership': typeof MembershipRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
+  '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/chapters/$slug': typeof ChaptersSlugRoute
@@ -390,6 +399,7 @@ export interface FileRouteTypes {
     | '/membership'
     | '/news'
     | '/partners'
+    | '/podcasts'
     | '/sitemap.xml'
     | '/admin'
     | '/chapters/$slug'
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/membership'
     | '/news'
     | '/partners'
+    | '/podcasts'
     | '/sitemap.xml'
     | '/chapters/$slug'
     | '/admin/academy'
@@ -467,6 +478,7 @@ export interface FileRouteTypes {
     | '/membership'
     | '/news'
     | '/partners'
+    | '/podcasts'
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/chapters/$slug'
@@ -508,6 +520,7 @@ export interface RootRouteChildren {
   MembershipRoute: typeof MembershipRoute
   NewsRoute: typeof NewsRoute
   PartnersRoute: typeof PartnersRoute
+  PodcastsRoute: typeof PodcastsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -518,6 +531,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podcasts': {
+      id: '/podcasts'
+      path: '/podcasts'
+      fullPath: '/podcasts'
+      preLoaderRoute: typeof PodcastsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -887,6 +907,7 @@ const rootRouteChildren: RootRouteChildren = {
   MembershipRoute: MembershipRoute,
   NewsRoute: NewsRoute,
   PartnersRoute: PartnersRoute,
+  PodcastsRoute: PodcastsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
