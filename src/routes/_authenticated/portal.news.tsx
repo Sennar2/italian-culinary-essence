@@ -9,7 +9,7 @@ function PortalNews() {
   const fn = useServerFn(myNews);
   const { data, isLoading } = useQuery({ queryKey: ["my-news"], queryFn: () => fn() });
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
-  const posts = (data as any)?.posts ?? [];
+  const posts = (data as any)?.news ?? [];
   return (
     <div>
       <p className="eyebrow">News</p>
@@ -17,11 +17,11 @@ function PortalNews() {
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         {posts.map((p: any) => (
           <article key={p.id} className="border border-border bg-card overflow-hidden">
-            {p.cover_url && <img src={p.cover_url} alt={p.title} className="aspect-[16/9] object-cover w-full" />}
+            {(p.cover_url || p.cover) && <img src={p.cover_url || p.cover} alt={p.title} className="aspect-[16/9] object-cover w-full" />}
             <div className="p-5">
               {p.category && <p className="text-[11px] tracking-[0.22em] uppercase text-gold">{p.category}</p>}
               <h3 className="mt-1 font-display text-xl">{p.title}</h3>
-              {p.publish_date && <p className="text-xs text-muted-foreground mt-1">{new Date(p.publish_date).toLocaleDateString("en-GB")}</p>}
+              {(p.publish_date || p.published_at) && <p className="text-xs text-muted-foreground mt-1">{new Date(p.publish_date || p.published_at).toLocaleDateString("en-GB")}</p>}
               {p.excerpt && <p className="mt-3 text-sm text-muted-foreground">{p.excerpt}</p>}
             </div>
           </article>
