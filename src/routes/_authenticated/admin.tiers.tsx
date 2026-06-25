@@ -38,8 +38,8 @@ export const Route = createFileRoute("/_authenticated/admin/tiers")({
         { name: "active", label: "Active", type: "checkbox" },
       ]}
       defaults={{ name: "", slug: "", billing_frequency: "yearly", currency: "EUR", active: true, sort_order: 0 }}
-      transformIn={(row) => ({ ...row, benefits_text: Array.isArray((row as any).benefits) ? (row as any).benefits.join("\n") : "" })}
-      transformOut={(row) => {
+      transformIn={(row: Record<string, unknown>) => ({ ...row, benefits_text: Array.isArray((row as Record<string, unknown>).benefits) ? ((row as Record<string, unknown>).benefits as string[]).join("\n") : "" })}
+      transformOut={(row: Record<string, unknown>) => {
         const benefits = String((row as any).benefits_text ?? "").split("\n").map((s) => s.trim()).filter(Boolean);
         const { benefits_text, ...rest } = row as any;
         void benefits_text;
