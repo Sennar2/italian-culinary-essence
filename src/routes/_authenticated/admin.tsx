@@ -70,8 +70,16 @@ function AdminLayout() {
           <SideLink to="/admin/events">Events</SideLink>
           <SideLink to="/admin/initiatives">Initiatives</SideLink>
           <SideLink to="/admin/academy">Academy</SideLink>
+          <SideLink to="/admin/academy-modules">Academy modules</SideLink>
+          <SideLink to="/admin/magazine">ICC Gusto issues</SideLink>
+          <SideLink to="/admin/podcasts">Podcasts</SideLink>
           <SideLink to="/admin/partners">Partners</SideLink>
           <SideLink to="/admin/testimonials">Testimonials</SideLink>
+
+          <p className="eyebrow mt-6 mb-3">Membership</p>
+          <SideLink to="/admin/members">Members</SideLink>
+          <SideLink to="/admin/tiers">Membership tiers</SideLink>
+          <SideLink to="/admin/access">Access control</SideLink>
 
           <p className="eyebrow mt-6 mb-3">System</p>
           <SideLink to="/admin/enquiries">Enquiries</SideLink>
