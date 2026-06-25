@@ -1,9 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Check } from "lucide-react";
 import { PageHeader } from "@/components/site/PageHeader";
 import { submitMembership } from "@/lib/api/forms.functions";
+import { listActiveTiers } from "@/lib/api/tiers.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/membership")({
@@ -20,14 +22,17 @@ export const Route = createFileRoute("/membership")({
   component: MembershipPage,
 });
 
-const tiers = [
-  { name: "Individual", price: "€120 / year", desc: "For enthusiasts and supporters of authentic Italian gastronomy.", perks: ["Member newsletter", "Invitations to local chapter events", "Digital membership card"] },
-  { name: "Professional", price: "€280 / year", desc: "For chefs, sommeliers, educators and culinary professionals.", perks: ["All Individual benefits", "Access to academy masterclasses", "Listed in the Members Directory"] },
-  { name: "Institutional", price: "On enquiry", desc: "For schools, academies, hotels and cultural institutions.", perks: ["Co-branded programmes", "Certification eligibility", "Annual summit delegation"] },
-  { name: "Corporate", price: "On enquiry", desc: "For producers, importers and brands aligned with our values.", perks: ["Strategic partnership", "Brand co-presentation", "Access to global chapter network"] },
-];
+function formatPrice(t: { price_cents: number | null; currency: string | null; billing_frequency: string }) {
+  if (!t.price_cents) return "On enquiry";
+  const amt = (t.price_cents / 100).toLocaleString("en-GB", { maximumFractionDigits: 0 });
+  const cur = t.currency === "EUR" ? "€" : t.currency === "USD" ? "$" : t.currency === "GBP" ? "£" : `${t.currency} `;
+  const freq = t.billing_frequency === "yearly" ? "/ year" : t.billing_frequency === "monthly" ? "/ month" : "";
+  return `${cur}${amt} ${freq}`.trim();
+}
 
 function MembershipPage() {
+  const listFn = useServerFn(listActiveTiers);
+  const { data: tiers = [] } = useQuery({ queryKey: ["active-tiers"], queryFn: () => listFn() });
   return (
     <>
       <PageHeader
@@ -35,17 +40,31 @@ function MembershipPage() {
         title="Join the global community of Italian gastronomy"
         intro="Members of ICC International become part of an international network dedicated to the protection and promotion of authentic Italian culinary culture."
       />
-      <section className="container-icc py-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {tiers.map((t) => (
-          <article key={t.name} className="flex flex-col border border-border bg-card p-8">
+      <section className="container-icc py-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {tiers.map((t: any) => (
+          <article key={t.id} className={`relative flex flex-col border bg-card p-8 ${t.featured ? "border-gold ring-1 ring-gold/30" : "border-border"}`}>
+            {t.featured && <span className="absolute -top-3 left-6 bg-gold text-forest px-3 py-1 text-[10px] tracking-[0.2em] uppercase">Most popular</span>}
             <p className="text-[11px] tracking-[0.22em] uppercase text-gold">{t.name}</p>
-            <p className="mt-3 font-display text-2xl text-foreground">{t.price}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{t.desc}</p>
-            <ul className="mt-6 space-y-2 text-sm text-foreground">
-              {t.perks.map((p) => (
+            <p className="mt-3 font-display text-3xl text-foreground">{formatPrice(t)}</p>
+            {t.description && <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>}
+            <ul className="mt-6 space-y-2 text-sm text-foreground flex-1">
+              {(t.benefits ?? []).map((p: string) => (
                 <li key={p} className="flex gap-2"><Check className="h-4 w-4 text-gold mt-0.5 shrink-0" />{p}</li>
               ))}
             </ul>
+            <div className="mt-8">
+              {t.payment_link ? (
+                <a href={t.payment_link} target="_blank" rel="noopener noreferrer"
+                  className="block text-center bg-forest text-cream py-3 text-[11px] tracking-[0.22em] uppercase hover:bg-forest-deep">
+                  {t.cta_label || "Join now"}
+                </a>
+              ) : (
+                <Link to="/auth" search={{ intent: "join", tier: t.slug } as never}
+                  className="block text-center bg-forest text-cream py-3 text-[11px] tracking-[0.22em] uppercase hover:bg-forest-deep">
+                  {t.cta_label || "Join now"}
+                </Link>
+              )}
+            </div>
           </article>
         ))}
       </section>
@@ -58,14 +77,14 @@ function MembershipPage() {
               Tell us a little about yourself and we will be in touch with the right path into the Consortium.
             </p>
           </div>
-          <MembershipForm />
+          <MembershipForm tiers={tiers} />
         </div>
       </section>
     </>
   );
 }
 
-function MembershipForm() {
+function MembershipForm({ tiers }: { tiers: any[] }) {
   const submit = useServerFn(submitMembership);
   const [loading, setLoading] = useState(false);
 
@@ -100,7 +119,7 @@ function MembershipForm() {
       <input name="country" placeholder="Country" className={inputCls} aria-label="Country" />
       <select name="tier" className={inputCls + " sm:col-span-2"} defaultValue="" aria-label="Tier">
         <option value="" disabled className="text-charcoal">Select a tier</option>
-        {tiers.map((t) => <option key={t.name} value={t.name} className="text-charcoal">{t.name}</option>)}
+        {tiers.map((t) => <option key={t.id} value={t.name} className="text-charcoal">{t.name}</option>)}
       </select>
       <textarea name="message" rows={4} placeholder="A short message (optional)" className={inputCls + " sm:col-span-2 resize-none"} aria-label="Message" />
       <button type="submit" disabled={loading} className="sm:col-span-2 bg-gold text-forest px-6 py-3 text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-gold-soft disabled:opacity-60">

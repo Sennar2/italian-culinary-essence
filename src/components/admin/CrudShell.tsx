@@ -32,9 +32,11 @@ type Props = {
   columns: ColumnDef[];
   fields: FieldDef[];
   defaults: Record<string, unknown>;
+  transformIn?: (row: Record<string, unknown>) => Record<string, unknown>;
+  transformOut?: (row: Record<string, unknown>) => Record<string, unknown>;
 };
 
-export function CrudShell({ title, eyebrow = "Manage", queryKey, listFn, saveFn, deleteFn, columns, fields, defaults }: Props) {
+export function CrudShell({ title, eyebrow = "Manage", queryKey, listFn, saveFn, deleteFn, columns, fields, defaults, transformIn, transformOut }: Props) {
   const qc = useQueryClient();
   const list = useServerFn(listFn);
   const save = useServerFn(saveFn);
@@ -50,9 +52,10 @@ export function CrudShell({ title, eyebrow = "Manage", queryKey, listFn, saveFn,
 
   const saveMut = useMutation({
     mutationFn: (row: Record<string, unknown>) => {
+      const out = transformOut ? transformOut(row) : row;
       const cleaned: Record<string, unknown> = {};
-      for (const k of Object.keys(row)) {
-        const v = row[k];
+      for (const k of Object.keys(out)) {
+        const v = (out as Record<string, unknown>)[k];
         if (v === "") cleaned[k] = null;
         else cleaned[k] = v;
       }
@@ -92,7 +95,7 @@ export function CrudShell({ title, eyebrow = "Manage", queryKey, listFn, saveFn,
           <tbody>
             {isLoading && <tr><td colSpan={columns.length + 1} className="px-4 py-6 text-muted-foreground">Loading…</td></tr>}
             {!isLoading && (data?.length ?? 0) === 0 && <tr><td colSpan={columns.length + 1} className="px-4 py-6 text-muted-foreground">No entries yet.</td></tr>}
-            {data?.map((r: Record<string, unknown>) => (
+            {data?.map((raw: Record<string, unknown>) => { const r = raw; return (
               <tr key={String(r.id)} className="border-t border-border">
                 {columns.map((c) => (
                   <td key={c.key} className="px-4 py-3 align-top">
@@ -100,11 +103,11 @@ export function CrudShell({ title, eyebrow = "Manage", queryKey, listFn, saveFn,
                   </td>
                 ))}
                 <td className="px-4 py-3 text-right whitespace-nowrap">
-                  <button onClick={() => setEditing(r)} className="text-forest hover:text-gold mr-3"><Pencil className="h-4 w-4" /></button>
+                  <button onClick={() => setEditing(transformIn ? transformIn(raw) : raw)} className="text-forest hover:text-gold mr-3"><Pencil className="h-4 w-4" /></button>
                   <button onClick={() => r.id && confirm("Delete this entry?") && delMut.mutate(String(r.id))} className="text-destructive hover:opacity-80"><Trash2 className="h-4 w-4" /></button>
                 </td>
               </tr>
-            ))}
+            ); })}
           </tbody>
         </table>
       </div>
