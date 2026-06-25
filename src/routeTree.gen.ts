@@ -39,6 +39,7 @@ import { Route as AuthenticatedPortalMagazineRouteImport } from './routes/_authe
 import { Route as AuthenticatedPortalEventsRouteImport } from './routes/_authenticated/portal.events'
 import { Route as AuthenticatedPortalAcademyRouteImport } from './routes/_authenticated/portal.academy'
 import { Route as AuthenticatedAdminWebsiteRouteImport } from './routes/_authenticated/admin.website'
+import { Route as AuthenticatedAdminTiersRouteImport } from './routes/_authenticated/admin.tiers'
 import { Route as AuthenticatedAdminTestimonialsRouteImport } from './routes/_authenticated/admin.testimonials'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
@@ -217,6 +218,11 @@ const AuthenticatedAdminWebsiteRoute =
     path: '/website',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminTiersRoute = AuthenticatedAdminTiersRouteImport.update({
+  id: '/tiers',
+  path: '/tiers',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminTestimonialsRoute =
   AuthenticatedAdminTestimonialsRouteImport.update({
     id: '/testimonials',
@@ -367,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
+  '/admin/tiers': typeof AuthenticatedAdminTiersRoute
   '/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/portal/events': typeof AuthenticatedPortalEventsRoute
@@ -416,6 +423,7 @@ export interface FileRoutesByTo {
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
+  '/admin/tiers': typeof AuthenticatedAdminTiersRoute
   '/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/portal/events': typeof AuthenticatedPortalEventsRoute
   '/portal/magazine': typeof AuthenticatedPortalMagazineRoute
@@ -468,6 +476,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
+  '/_authenticated/admin/tiers': typeof AuthenticatedAdminTiersRoute
   '/_authenticated/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/_authenticated/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/_authenticated/portal/events': typeof AuthenticatedPortalEventsRoute
@@ -521,6 +530,7 @@ export interface FileRouteTypes {
     | '/admin/partners'
     | '/admin/settings'
     | '/admin/testimonials'
+    | '/admin/tiers'
     | '/admin/website'
     | '/portal/academy'
     | '/portal/events'
@@ -570,6 +580,7 @@ export interface FileRouteTypes {
     | '/admin/partners'
     | '/admin/settings'
     | '/admin/testimonials'
+    | '/admin/tiers'
     | '/portal/academy'
     | '/portal/events'
     | '/portal/magazine'
@@ -621,6 +632,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/partners'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/testimonials'
+    | '/_authenticated/admin/tiers'
     | '/_authenticated/admin/website'
     | '/_authenticated/portal/academy'
     | '/_authenticated/portal/events'
@@ -875,6 +887,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminWebsiteRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/tiers': {
+      id: '/_authenticated/admin/tiers'
+      path: '/tiers'
+      fullPath: '/admin/tiers'
+      preLoaderRoute: typeof AuthenticatedAdminTiersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/testimonials': {
       id: '/_authenticated/admin/testimonials'
       path: '/testimonials'
@@ -1063,6 +1082,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminTestimonialsRoute: typeof AuthenticatedAdminTestimonialsRoute
+  AuthenticatedAdminTiersRoute: typeof AuthenticatedAdminTiersRoute
   AuthenticatedAdminWebsiteRoute: typeof AuthenticatedAdminWebsiteRouteWithChildren
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -1078,6 +1098,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminTestimonialsRoute: AuthenticatedAdminTestimonialsRoute,
+  AuthenticatedAdminTiersRoute: AuthenticatedAdminTiersRoute,
   AuthenticatedAdminWebsiteRoute: AuthenticatedAdminWebsiteRouteWithChildren,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
