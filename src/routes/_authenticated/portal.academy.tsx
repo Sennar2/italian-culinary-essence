@@ -1,18 +1,11 @@
-import { createFileRoute, Link, Outlet, useMatches } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { myAcademy } from "@/lib/api/portal.functions";
 
 export const Route = createFileRoute("/_authenticated/portal/academy")({
-  component: AcademyLayout,
+  component: AcademyIndex,
 });
-
-function AcademyLayout() {
-  const matches = useMatches();
-  const hasChild = matches.some((m) => m.routeId === "/_authenticated/portal/academy/$slug");
-  if (hasChild) return <Outlet />;
-  return <AcademyIndex />;
-}
 
 function AcademyIndex() {
   const fn = useServerFn(myAcademy);
