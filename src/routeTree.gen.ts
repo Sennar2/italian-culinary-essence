@@ -49,6 +49,7 @@ import { Route as AuthenticatedAdminInitiativesRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminEnquiriesRouteImport } from './routes/_authenticated/admin.enquiries'
 import { Route as AuthenticatedAdminChaptersRouteImport } from './routes/_authenticated/admin.chapters'
+import { Route as AuthenticatedAdminAcademyModulesRouteImport } from './routes/_authenticated/admin.academy-modules'
 import { Route as AuthenticatedAdminAcademyRouteImport } from './routes/_authenticated/admin.academy'
 import { Route as AuthenticatedAdminWebsiteIndexRouteImport } from './routes/_authenticated/admin.website.index'
 import { Route as AuthenticatedPortalAcademySlugRouteImport } from './routes/_authenticated/portal.academy.$slug'
@@ -276,6 +277,12 @@ const AuthenticatedAdminChaptersRoute =
     path: '/chapters',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminAcademyModulesRoute =
+  AuthenticatedAdminAcademyModulesRouteImport.update({
+    id: '/academy-modules',
+    path: '/academy-modules',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAcademyRoute =
   AuthenticatedAdminAcademyRouteImport.update({
     id: '/academy',
@@ -364,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/portal': typeof AuthenticatedPortalRouteWithChildren
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/admin/academy': typeof AuthenticatedAdminAcademyRoute
+  '/admin/academy-modules': typeof AuthenticatedAdminAcademyModulesRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersRoute
   '/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
@@ -414,6 +422,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/admin/academy': typeof AuthenticatedAdminAcademyRoute
+  '/admin/academy-modules': typeof AuthenticatedAdminAcademyModulesRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersRoute
   '/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
@@ -467,6 +476,7 @@ export interface FileRoutesById {
   '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/_authenticated/admin/academy': typeof AuthenticatedAdminAcademyRoute
+  '/_authenticated/admin/academy-modules': typeof AuthenticatedAdminAcademyModulesRoute
   '/_authenticated/admin/chapters': typeof AuthenticatedAdminChaptersRoute
   '/_authenticated/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
@@ -521,6 +531,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/chapters/$slug'
     | '/admin/academy'
+    | '/admin/academy-modules'
     | '/admin/chapters'
     | '/admin/enquiries'
     | '/admin/events'
@@ -571,6 +582,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/chapters/$slug'
     | '/admin/academy'
+    | '/admin/academy-modules'
     | '/admin/chapters'
     | '/admin/enquiries'
     | '/admin/events'
@@ -623,6 +635,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal'
     | '/chapters/$slug'
     | '/_authenticated/admin/academy'
+    | '/_authenticated/admin/academy-modules'
     | '/_authenticated/admin/chapters'
     | '/_authenticated/admin/enquiries'
     | '/_authenticated/admin/events'
@@ -957,6 +970,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminChaptersRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/academy-modules': {
+      id: '/_authenticated/admin/academy-modules'
+      path: '/academy-modules'
+      fullPath: '/admin/academy-modules'
+      preLoaderRoute: typeof AuthenticatedAdminAcademyModulesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/academy': {
       id: '/_authenticated/admin/academy'
       path: '/academy'
@@ -1073,6 +1093,7 @@ const AuthenticatedAdminWebsiteRouteWithChildren =
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAcademyRoute: typeof AuthenticatedAdminAcademyRoute
+  AuthenticatedAdminAcademyModulesRoute: typeof AuthenticatedAdminAcademyModulesRoute
   AuthenticatedAdminChaptersRoute: typeof AuthenticatedAdminChaptersRoute
   AuthenticatedAdminEnquiriesRoute: typeof AuthenticatedAdminEnquiriesRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
@@ -1089,6 +1110,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAcademyRoute: AuthenticatedAdminAcademyRoute,
+  AuthenticatedAdminAcademyModulesRoute: AuthenticatedAdminAcademyModulesRoute,
   AuthenticatedAdminChaptersRoute: AuthenticatedAdminChaptersRoute,
   AuthenticatedAdminEnquiriesRoute: AuthenticatedAdminEnquiriesRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
