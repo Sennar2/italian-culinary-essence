@@ -14,6 +14,7 @@ import { Route as PodcastsRouteImport } from './routes/podcasts'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as MembershipRouteImport } from './routes/membership'
+import { Route as MagazineRouteImport } from './routes/magazine'
 import { Route as LeadershipRouteImport } from './routes/leadership'
 import { Route as InitiativesRouteImport } from './routes/initiatives'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -72,6 +73,11 @@ const NewsRoute = NewsRouteImport.update({
 const MembershipRoute = MembershipRouteImport.update({
   id: '/membership',
   path: '/membership',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MagazineRoute = MagazineRouteImport.update({
+  id: '/magazine',
+  path: '/magazine',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeadershipRoute = LeadershipRouteImport.update({
@@ -274,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/initiatives': typeof InitiativesRoute
   '/leadership': typeof LeadershipRoute
+  '/magazine': typeof MagazineRoute
   '/membership': typeof MembershipRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
@@ -314,6 +321,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/initiatives': typeof InitiativesRoute
   '/leadership': typeof LeadershipRoute
+  '/magazine': typeof MagazineRoute
   '/membership': typeof MembershipRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
@@ -354,6 +362,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/initiatives': typeof InitiativesRoute
   '/leadership': typeof LeadershipRoute
+  '/magazine': typeof MagazineRoute
   '/membership': typeof MembershipRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
@@ -396,6 +405,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/initiatives'
     | '/leadership'
+    | '/magazine'
     | '/membership'
     | '/news'
     | '/partners'
@@ -436,6 +446,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/initiatives'
     | '/leadership'
+    | '/magazine'
     | '/membership'
     | '/news'
     | '/partners'
@@ -475,6 +486,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/initiatives'
     | '/leadership'
+    | '/magazine'
     | '/membership'
     | '/news'
     | '/partners'
@@ -517,6 +529,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   InitiativesRoute: typeof InitiativesRoute
   LeadershipRoute: typeof LeadershipRoute
+  MagazineRoute: typeof MagazineRoute
   MembershipRoute: typeof MembershipRoute
   NewsRoute: typeof NewsRoute
   PartnersRoute: typeof PartnersRoute
@@ -559,6 +572,13 @@ declare module '@tanstack/react-router' {
       path: '/membership'
       fullPath: '/membership'
       preLoaderRoute: typeof MembershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/magazine': {
+      id: '/magazine'
+      path: '/magazine'
+      fullPath: '/magazine'
+      preLoaderRoute: typeof MagazineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leadership': {
@@ -904,6 +924,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   InitiativesRoute: InitiativesRoute,
   LeadershipRoute: LeadershipRoute,
+  MagazineRoute: MagazineRoute,
   MembershipRoute: MembershipRoute,
   NewsRoute: NewsRoute,
   PartnersRoute: PartnersRoute,
