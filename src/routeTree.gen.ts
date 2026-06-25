@@ -27,6 +27,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChaptersSlugRouteImport } from './routes/chapters.$slug'
+import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminWebsiteRouteImport } from './routes/_authenticated/admin.website'
@@ -138,6 +139,11 @@ const ChaptersSlugRoute = ChaptersSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ChaptersRoute,
+} as any)
+const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
@@ -287,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/portal': typeof AuthenticatedPortalRoute
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersRoute
@@ -327,6 +334,7 @@ export interface FileRoutesByTo {
   '/partners': typeof PartnersRoute
   '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/portal': typeof AuthenticatedPortalRoute
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersRoute
@@ -369,6 +377,7 @@ export interface FileRoutesById {
   '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/portal': typeof AuthenticatedPortalRoute
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/_authenticated/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/_authenticated/admin/chapters': typeof AuthenticatedAdminChaptersRoute
@@ -412,6 +421,7 @@ export interface FileRouteTypes {
     | '/podcasts'
     | '/sitemap.xml'
     | '/admin'
+    | '/portal'
     | '/chapters/$slug'
     | '/admin/academy'
     | '/admin/chapters'
@@ -452,6 +462,7 @@ export interface FileRouteTypes {
     | '/partners'
     | '/podcasts'
     | '/sitemap.xml'
+    | '/portal'
     | '/chapters/$slug'
     | '/admin/academy'
     | '/admin/chapters'
@@ -493,6 +504,7 @@ export interface FileRouteTypes {
     | '/podcasts'
     | '/sitemap.xml'
     | '/_authenticated/admin'
+    | '/_authenticated/portal'
     | '/chapters/$slug'
     | '/_authenticated/admin/academy'
     | '/_authenticated/admin/chapters'
@@ -664,6 +676,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/chapters/$slug'
       preLoaderRoute: typeof ChaptersSlugRouteImport
       parentRoute: typeof ChaptersRoute
+    }
+    '/_authenticated/portal': {
+      id: '/_authenticated/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof AuthenticatedPortalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
@@ -891,10 +910,12 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedPortalRoute: AuthenticatedPortalRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
