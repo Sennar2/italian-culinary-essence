@@ -59,6 +59,107 @@ export type Database = {
         }
         Relationships: []
       }
+      academy_lessons: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["lesson_kind"]
+          module_id: string
+          pdf_url: string | null
+          scorm_launch_url: string | null
+          scorm_package_path: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["lesson_kind"]
+          module_id: string
+          pdf_url?: string | null
+          scorm_launch_url?: string | null
+          scorm_package_path?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["lesson_kind"]
+          module_id?: string
+          pdf_url?: string | null
+          scorm_launch_url?: string | null
+          scorm_package_path?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "academy_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_modules: {
+        Row: {
+          category: string | null
+          certificate_eligible: boolean
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          passing_score: number | null
+          published: boolean
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          certificate_eligible?: boolean
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          passing_score?: number | null
+          published?: boolean
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          certificate_eligible?: boolean
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          passing_score?: number | null
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       banners: {
         Row: {
           created_at: string
@@ -103,6 +204,48 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      certificates: {
+        Row: {
+          certificate_number: string
+          id: string
+          issued_at: string
+          member_id: string
+          module_id: string
+          pdf_url: string | null
+        }
+        Insert: {
+          certificate_number: string
+          id?: string
+          issued_at?: string
+          member_id: string
+          module_id: string
+          pdf_url?: string | null
+        }
+        Update: {
+          certificate_number?: string
+          id?: string
+          issued_at?: string
+          member_id?: string
+          module_id?: string
+          pdf_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "academy_modules"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chapters: {
         Row: {
@@ -206,9 +349,42 @@ export type Database = {
         }
         Relationships: []
       }
+      content_access: {
+        Row: {
+          content_id: string
+          content_type: Database["public"]["Enums"]["access_content_type"]
+          created_at: string
+          id: string
+          tier_id: string
+        }
+        Insert: {
+          content_id: string
+          content_type: Database["public"]["Enums"]["access_content_type"]
+          created_at?: string
+          id?: string
+          tier_id: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: Database["public"]["Enums"]["access_content_type"]
+          created_at?: string
+          id?: string
+          tier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_access_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "membership_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           body: string | null
+          booking_url: string | null
           city: string | null
           country: string | null
           cover: string | null
@@ -220,13 +396,16 @@ export type Database = {
           published: boolean
           registration_url: string | null
           slug: string
+          sponsors: string[] | null
           starts_at: string | null
           status: string
           title: string
           updated_at: string
+          visibility: Database["public"]["Enums"]["content_visibility"]
         }
         Insert: {
           body?: string | null
+          booking_url?: string | null
           city?: string | null
           country?: string | null
           cover?: string | null
@@ -238,13 +417,16 @@ export type Database = {
           published?: boolean
           registration_url?: string | null
           slug: string
+          sponsors?: string[] | null
           starts_at?: string | null
           status?: string
           title: string
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["content_visibility"]
         }
         Update: {
           body?: string | null
+          booking_url?: string | null
           city?: string | null
           country?: string | null
           cover?: string | null
@@ -256,10 +438,12 @@ export type Database = {
           published?: boolean
           registration_url?: string | null
           slug?: string
+          sponsors?: string[] | null
           starts_at?: string | null
           status?: string
           title?: string
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["content_visibility"]
         }
         Relationships: []
       }
@@ -416,6 +600,230 @@ export type Database = {
         }
         Relationships: []
       }
+      magazine_articles: {
+        Row: {
+          author: string | null
+          body: string | null
+          cover_url: string | null
+          created_at: string
+          id: string
+          issue_id: string
+          published: boolean
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          body?: string | null
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          issue_id: string
+          published?: boolean
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          body?: string | null
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          issue_id?: string
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "magazine_articles_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "magazine_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      magazine_issues: {
+        Row: {
+          cover_url: string | null
+          created_at: string
+          id: string
+          issue_date: string | null
+          public_preview: boolean
+          published: boolean
+          slug: string
+          sort_order: number
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          issue_date?: string | null
+          public_preview?: boolean
+          published?: boolean
+          slug: string
+          sort_order?: number
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          issue_date?: string | null
+          public_preview?: boolean
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      member_course_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          lesson_id: string | null
+          member_id: string
+          module_id: string
+          score: number | null
+          scorm_suspend_data: string | null
+          status: Database["public"]["Enums"]["progress_status"]
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lesson_id?: string | null
+          member_id: string
+          module_id: string
+          score?: number | null
+          scorm_suspend_data?: string | null
+          status?: Database["public"]["Enums"]["progress_status"]
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lesson_id?: string | null
+          member_id?: string
+          module_id?: string
+          score?: number | null
+          scorm_suspend_data?: string | null
+          status?: Database["public"]["Enums"]["progress_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_course_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "academy_lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_course_progress_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_course_progress_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "academy_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      members: {
+        Row: {
+          city: string | null
+          company: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          internal_notes: string | null
+          join_date: string
+          payment_reference: string | null
+          payment_status: string | null
+          phone: string | null
+          profession: string | null
+          renewal_date: string | null
+          status: Database["public"]["Enums"]["member_status"]
+          tier_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city?: string | null
+          company?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          internal_notes?: string | null
+          join_date?: string
+          payment_reference?: string | null
+          payment_status?: string | null
+          phone?: string | null
+          profession?: string | null
+          renewal_date?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+          tier_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string | null
+          company?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          internal_notes?: string | null
+          join_date?: string
+          payment_reference?: string | null
+          payment_status?: string | null
+          phone?: string | null
+          profession?: string | null
+          renewal_date?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+          tier_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "members_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "membership_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       membership_enquiries: {
         Row: {
           country: string | null
@@ -446,6 +854,63 @@ export type Database = {
           name?: string
           organisation?: string | null
           tier?: string | null
+        }
+        Relationships: []
+      }
+      membership_tiers: {
+        Row: {
+          access_level: number
+          active: boolean
+          benefits: string[] | null
+          billing_frequency: Database["public"]["Enums"]["billing_frequency"]
+          created_at: string
+          cta_label: string | null
+          currency: string | null
+          description: string | null
+          featured: boolean
+          id: string
+          name: string
+          payment_link: string | null
+          price_cents: number | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          access_level?: number
+          active?: boolean
+          benefits?: string[] | null
+          billing_frequency?: Database["public"]["Enums"]["billing_frequency"]
+          created_at?: string
+          cta_label?: string | null
+          currency?: string | null
+          description?: string | null
+          featured?: boolean
+          id?: string
+          name: string
+          payment_link?: string | null
+          price_cents?: number | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          access_level?: number
+          active?: boolean
+          benefits?: string[] | null
+          billing_frequency?: Database["public"]["Enums"]["billing_frequency"]
+          created_at?: string
+          cta_label?: string | null
+          currency?: string | null
+          description?: string | null
+          featured?: boolean
+          id?: string
+          name?: string
+          payment_link?: string | null
+          price_cents?: number | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -503,6 +968,7 @@ export type Database = {
           slug: string
           title: string
           updated_at: string
+          visibility: Database["public"]["Enums"]["content_visibility"]
         }
         Insert: {
           author?: string | null
@@ -518,6 +984,7 @@ export type Database = {
           slug: string
           title: string
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["content_visibility"]
         }
         Update: {
           author?: string | null
@@ -533,6 +1000,7 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["content_visibility"]
         }
         Relationships: []
       }
@@ -590,6 +1058,63 @@ export type Database = {
           tier?: string | null
           updated_at?: string
           url?: string | null
+        }
+        Relationships: []
+      }
+      podcast_episodes: {
+        Row: {
+          apple_url: string | null
+          audio_url: string | null
+          category: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          episode_number: number | null
+          id: string
+          publish_date: string | null
+          published: boolean
+          slug: string
+          spotify_url: string | null
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["content_visibility"]
+          youtube_url: string | null
+        }
+        Insert: {
+          apple_url?: string | null
+          audio_url?: string | null
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          episode_number?: number | null
+          id?: string
+          publish_date?: string | null
+          published?: boolean
+          slug: string
+          spotify_url?: string | null
+          title: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["content_visibility"]
+          youtube_url?: string | null
+        }
+        Update: {
+          apple_url?: string | null
+          audio_url?: string | null
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          episode_number?: number | null
+          id?: string
+          publish_date?: string | null
+          published?: boolean
+          slug?: string
+          spotify_url?: string | null
+          title?: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["content_visibility"]
+          youtube_url?: string | null
         }
         Relationships: []
       }
@@ -679,6 +1204,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_member_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -688,7 +1214,19 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "editor"
+      access_content_type:
+        | "module"
+        | "news"
+        | "magazine_issue"
+        | "article"
+        | "podcast"
+        | "event"
+      app_role: "admin" | "editor" | "member"
+      billing_frequency: "monthly" | "yearly" | "one_off" | "on_enquiry"
+      content_visibility: "public" | "members" | "tier"
+      lesson_kind: "video" | "pdf" | "scorm" | "text"
+      member_status: "pending" | "active" | "suspended" | "expired"
+      progress_status: "not_started" | "in_progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -816,7 +1354,20 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "editor"],
+      access_content_type: [
+        "module",
+        "news",
+        "magazine_issue",
+        "article",
+        "podcast",
+        "event",
+      ],
+      app_role: ["admin", "editor", "member"],
+      billing_frequency: ["monthly", "yearly", "one_off", "on_enquiry"],
+      content_visibility: ["public", "members", "tier"],
+      lesson_kind: ["video", "pdf", "scorm", "text"],
+      member_status: ["pending", "active", "suspended", "expired"],
+      progress_status: ["not_started", "in_progress", "completed"],
     },
   },
 } as const
