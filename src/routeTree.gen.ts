@@ -45,6 +45,7 @@ import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminPodcastsRouteImport } from './routes/_authenticated/admin.podcasts'
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
 import { Route as AuthenticatedAdminNewsRouteImport } from './routes/_authenticated/admin.news'
+import { Route as AuthenticatedAdminMembersRouteImport } from './routes/_authenticated/admin.members'
 import { Route as AuthenticatedAdminMagazineRouteImport } from './routes/_authenticated/admin.magazine'
 import { Route as AuthenticatedAdminLeadershipRouteImport } from './routes/_authenticated/admin.leadership'
 import { Route as AuthenticatedAdminInitiativesRouteImport } from './routes/_authenticated/admin.initiatives'
@@ -255,6 +256,12 @@ const AuthenticatedAdminNewsRoute = AuthenticatedAdminNewsRouteImport.update({
   path: '/news',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminMembersRoute =
+  AuthenticatedAdminMembersRouteImport.update({
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminMagazineRoute =
   AuthenticatedAdminMagazineRouteImport.update({
     id: '/magazine',
@@ -392,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
   '/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
   '/admin/magazine': typeof AuthenticatedAdminMagazineRoute
+  '/admin/members': typeof AuthenticatedAdminMembersRoute
   '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
@@ -445,6 +453,7 @@ export interface FileRoutesByTo {
   '/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
   '/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
   '/admin/magazine': typeof AuthenticatedAdminMagazineRoute
+  '/admin/members': typeof AuthenticatedAdminMembersRoute
   '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
@@ -501,6 +510,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
   '/_authenticated/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
   '/_authenticated/admin/magazine': typeof AuthenticatedAdminMagazineRoute
+  '/_authenticated/admin/members': typeof AuthenticatedAdminMembersRoute
   '/_authenticated/admin/news': typeof AuthenticatedAdminNewsRoute
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/_authenticated/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
@@ -558,6 +568,7 @@ export interface FileRouteTypes {
     | '/admin/initiatives'
     | '/admin/leadership'
     | '/admin/magazine'
+    | '/admin/members'
     | '/admin/news'
     | '/admin/partners'
     | '/admin/podcasts'
@@ -611,6 +622,7 @@ export interface FileRouteTypes {
     | '/admin/initiatives'
     | '/admin/leadership'
     | '/admin/magazine'
+    | '/admin/members'
     | '/admin/news'
     | '/admin/partners'
     | '/admin/podcasts'
@@ -666,6 +678,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/initiatives'
     | '/_authenticated/admin/leadership'
     | '/_authenticated/admin/magazine'
+    | '/_authenticated/admin/members'
     | '/_authenticated/admin/news'
     | '/_authenticated/admin/partners'
     | '/_authenticated/admin/podcasts'
@@ -968,6 +981,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminNewsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/members': {
+      id: '/_authenticated/admin/members'
+      path: '/members'
+      fullPath: '/admin/members'
+      preLoaderRoute: typeof AuthenticatedAdminMembersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/magazine': {
       id: '/_authenticated/admin/magazine'
       path: '/magazine'
@@ -1140,6 +1160,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminInitiativesRoute: typeof AuthenticatedAdminInitiativesRoute
   AuthenticatedAdminLeadershipRoute: typeof AuthenticatedAdminLeadershipRoute
   AuthenticatedAdminMagazineRoute: typeof AuthenticatedAdminMagazineRoute
+  AuthenticatedAdminMembersRoute: typeof AuthenticatedAdminMembersRoute
   AuthenticatedAdminNewsRoute: typeof AuthenticatedAdminNewsRoute
   AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
   AuthenticatedAdminPodcastsRoute: typeof AuthenticatedAdminPodcastsRoute
@@ -1159,6 +1180,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminInitiativesRoute: AuthenticatedAdminInitiativesRoute,
   AuthenticatedAdminLeadershipRoute: AuthenticatedAdminLeadershipRoute,
   AuthenticatedAdminMagazineRoute: AuthenticatedAdminMagazineRoute,
+  AuthenticatedAdminMembersRoute: AuthenticatedAdminMembersRoute,
   AuthenticatedAdminNewsRoute: AuthenticatedAdminNewsRoute,
   AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
   AuthenticatedAdminPodcastsRoute: AuthenticatedAdminPodcastsRoute,
