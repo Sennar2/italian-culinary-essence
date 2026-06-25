@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
+import { Route as AuthenticatedPortalPodcastsRouteImport } from './routes/_authenticated/portal.podcasts'
 import { Route as AuthenticatedPortalMembershipRouteImport } from './routes/_authenticated/portal.membership'
 import { Route as AuthenticatedPortalAcademyRouteImport } from './routes/_authenticated/portal.academy'
 import { Route as AuthenticatedAdminWebsiteRouteImport } from './routes/_authenticated/admin.website'
@@ -170,6 +171,12 @@ const AuthenticatedPortalProfileRoute =
   AuthenticatedPortalProfileRouteImport.update({
     id: '/profile',
     path: '/profile',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalPodcastsRoute =
+  AuthenticatedPortalPodcastsRouteImport.update({
+    id: '/podcasts',
+    path: '/podcasts',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 const AuthenticatedPortalMembershipRoute =
@@ -343,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/portal/membership': typeof AuthenticatedPortalMembershipRoute
+  '/portal/podcasts': typeof AuthenticatedPortalPodcastsRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -387,6 +395,7 @@ export interface FileRoutesByTo {
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/portal/membership': typeof AuthenticatedPortalMembershipRoute
+  '/portal/podcasts': typeof AuthenticatedPortalPodcastsRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -436,6 +445,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/_authenticated/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/_authenticated/portal/membership': typeof AuthenticatedPortalMembershipRoute
+  '/_authenticated/portal/podcasts': typeof AuthenticatedPortalPodcastsRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -485,6 +495,7 @@ export interface FileRouteTypes {
     | '/admin/website'
     | '/portal/academy'
     | '/portal/membership'
+    | '/portal/podcasts'
     | '/portal/profile'
     | '/admin/'
     | '/portal/'
@@ -529,6 +540,7 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/portal/academy'
     | '/portal/membership'
+    | '/portal/podcasts'
     | '/portal/profile'
     | '/admin'
     | '/portal'
@@ -577,6 +589,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/website'
     | '/_authenticated/portal/academy'
     | '/_authenticated/portal/membership'
+    | '/_authenticated/portal/podcasts'
     | '/_authenticated/portal/profile'
     | '/_authenticated/admin/'
     | '/_authenticated/portal/'
@@ -773,6 +786,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/portal/profile'
       preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/podcasts': {
+      id: '/_authenticated/portal/podcasts'
+      path: '/podcasts'
+      fullPath: '/portal/podcasts'
+      preLoaderRoute: typeof AuthenticatedPortalPodcastsRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
     '/_authenticated/portal/membership': {
@@ -1023,6 +1043,7 @@ const AuthenticatedPortalAcademyRouteWithChildren =
 interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalAcademyRoute: typeof AuthenticatedPortalAcademyRouteWithChildren
   AuthenticatedPortalMembershipRoute: typeof AuthenticatedPortalMembershipRoute
+  AuthenticatedPortalPodcastsRoute: typeof AuthenticatedPortalPodcastsRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
 }
@@ -1030,6 +1051,7 @@ interface AuthenticatedPortalRouteChildren {
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalAcademyRoute: AuthenticatedPortalAcademyRouteWithChildren,
   AuthenticatedPortalMembershipRoute: AuthenticatedPortalMembershipRoute,
+  AuthenticatedPortalPodcastsRoute: AuthenticatedPortalPodcastsRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
 }
