@@ -21,13 +21,7 @@ function PortalMagazine() {
             <div className="p-5">
               <p className="text-[11px] tracking-[0.22em] uppercase text-gold">{i.issue_date ? new Date(i.issue_date).toLocaleDateString("en-GB", { year: "numeric", month: "long" }) : "Issue"}</p>
               <h3 className="mt-1 font-display text-xl">{i.title}</h3>
-              {(i.articles?.length ?? 0) > 0 && (
-                <ul className="mt-4 space-y-2 text-sm">
-                  {i.articles.slice(0, 5).map((a: any) => (
-                    <li key={a.id} className="border-l-2 border-gold pl-3"><p className="font-medium">{a.title}</p>{a.author && <p className="text-xs text-muted-foreground">{a.author}</p>}</li>
-                  ))}
-                </ul>
-              )}
+              {i.description && <p className="mt-3 text-sm text-muted-foreground line-clamp-4">{i.description}</p>}
             </div>
           </article>
         ))}
