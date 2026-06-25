@@ -46,6 +46,7 @@ import { Route as AuthenticatedAdminEnquiriesRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminChaptersRouteImport } from './routes/_authenticated/admin.chapters'
 import { Route as AuthenticatedAdminAcademyRouteImport } from './routes/_authenticated/admin.academy'
 import { Route as AuthenticatedAdminWebsiteIndexRouteImport } from './routes/_authenticated/admin.website.index'
+import { Route as AuthenticatedPortalAcademySlugRouteImport } from './routes/_authenticated/portal.academy.$slug'
 import { Route as AuthenticatedAdminWebsiteNavRouteImport } from './routes/_authenticated/admin.website.nav'
 import { Route as AuthenticatedAdminWebsiteHeroRouteImport } from './routes/_authenticated/admin.website.hero'
 import { Route as AuthenticatedAdminWebsiteGalleryRouteImport } from './routes/_authenticated/admin.website.gallery'
@@ -254,6 +255,12 @@ const AuthenticatedAdminWebsiteIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAdminWebsiteRoute,
   } as any)
+const AuthenticatedPortalAcademySlugRoute =
+  AuthenticatedPortalAcademySlugRouteImport.update({
+    id: '/$slug',
+    path: '/$slug',
+    getParentRoute: () => AuthenticatedPortalAcademyRoute,
+  } as any)
 const AuthenticatedAdminWebsiteNavRoute =
   AuthenticatedAdminWebsiteNavRouteImport.update({
     id: '/nav',
@@ -334,7 +341,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
-  '/portal/academy': typeof AuthenticatedPortalAcademyRoute
+  '/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/portal/membership': typeof AuthenticatedPortalMembershipRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -347,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/admin/website/gallery': typeof AuthenticatedAdminWebsiteGalleryRoute
   '/admin/website/hero': typeof AuthenticatedAdminWebsiteHeroRoute
   '/admin/website/nav': typeof AuthenticatedAdminWebsiteNavRoute
+  '/portal/academy/$slug': typeof AuthenticatedPortalAcademySlugRoute
   '/admin/website/': typeof AuthenticatedAdminWebsiteIndexRoute
 }
 export interface FileRoutesByTo {
@@ -377,7 +385,7 @@ export interface FileRoutesByTo {
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
-  '/portal/academy': typeof AuthenticatedPortalAcademyRoute
+  '/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/portal/membership': typeof AuthenticatedPortalMembershipRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -390,6 +398,7 @@ export interface FileRoutesByTo {
   '/admin/website/gallery': typeof AuthenticatedAdminWebsiteGalleryRoute
   '/admin/website/hero': typeof AuthenticatedAdminWebsiteHeroRoute
   '/admin/website/nav': typeof AuthenticatedAdminWebsiteNavRoute
+  '/portal/academy/$slug': typeof AuthenticatedPortalAcademySlugRoute
   '/admin/website': typeof AuthenticatedAdminWebsiteIndexRoute
 }
 export interface FileRoutesById {
@@ -425,7 +434,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/_authenticated/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
-  '/_authenticated/portal/academy': typeof AuthenticatedPortalAcademyRoute
+  '/_authenticated/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
   '/_authenticated/portal/membership': typeof AuthenticatedPortalMembershipRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -438,6 +447,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/website/gallery': typeof AuthenticatedAdminWebsiteGalleryRoute
   '/_authenticated/admin/website/hero': typeof AuthenticatedAdminWebsiteHeroRoute
   '/_authenticated/admin/website/nav': typeof AuthenticatedAdminWebsiteNavRoute
+  '/_authenticated/portal/academy/$slug': typeof AuthenticatedPortalAcademySlugRoute
   '/_authenticated/admin/website/': typeof AuthenticatedAdminWebsiteIndexRoute
 }
 export interface FileRouteTypes {
@@ -486,6 +496,7 @@ export interface FileRouteTypes {
     | '/admin/website/gallery'
     | '/admin/website/hero'
     | '/admin/website/nav'
+    | '/portal/academy/$slug'
     | '/admin/website/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -529,6 +540,7 @@ export interface FileRouteTypes {
     | '/admin/website/gallery'
     | '/admin/website/hero'
     | '/admin/website/nav'
+    | '/portal/academy/$slug'
     | '/admin/website'
   id:
     | '__root__'
@@ -576,6 +588,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/website/gallery'
     | '/_authenticated/admin/website/hero'
     | '/_authenticated/admin/website/nav'
+    | '/_authenticated/portal/academy/$slug'
     | '/_authenticated/admin/website/'
   fileRoutesById: FileRoutesById
 }
@@ -860,6 +873,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminWebsiteIndexRouteImport
       parentRoute: typeof AuthenticatedAdminWebsiteRoute
     }
+    '/_authenticated/portal/academy/$slug': {
+      id: '/_authenticated/portal/academy/$slug'
+      path: '/$slug'
+      fullPath: '/portal/academy/$slug'
+      preLoaderRoute: typeof AuthenticatedPortalAcademySlugRouteImport
+      parentRoute: typeof AuthenticatedPortalAcademyRoute
+    }
     '/_authenticated/admin/website/nav': {
       id: '/_authenticated/admin/website/nav'
       path: '/nav'
@@ -986,15 +1006,29 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedPortalAcademyRouteChildren {
+  AuthenticatedPortalAcademySlugRoute: typeof AuthenticatedPortalAcademySlugRoute
+}
+
+const AuthenticatedPortalAcademyRouteChildren: AuthenticatedPortalAcademyRouteChildren =
+  {
+    AuthenticatedPortalAcademySlugRoute: AuthenticatedPortalAcademySlugRoute,
+  }
+
+const AuthenticatedPortalAcademyRouteWithChildren =
+  AuthenticatedPortalAcademyRoute._addFileChildren(
+    AuthenticatedPortalAcademyRouteChildren,
+  )
+
 interface AuthenticatedPortalRouteChildren {
-  AuthenticatedPortalAcademyRoute: typeof AuthenticatedPortalAcademyRoute
+  AuthenticatedPortalAcademyRoute: typeof AuthenticatedPortalAcademyRouteWithChildren
   AuthenticatedPortalMembershipRoute: typeof AuthenticatedPortalMembershipRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
-  AuthenticatedPortalAcademyRoute: AuthenticatedPortalAcademyRoute,
+  AuthenticatedPortalAcademyRoute: AuthenticatedPortalAcademyRouteWithChildren,
   AuthenticatedPortalMembershipRoute: AuthenticatedPortalMembershipRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
