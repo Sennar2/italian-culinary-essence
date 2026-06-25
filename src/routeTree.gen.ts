@@ -42,8 +42,10 @@ import { Route as AuthenticatedAdminWebsiteRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminTiersRouteImport } from './routes/_authenticated/admin.tiers'
 import { Route as AuthenticatedAdminTestimonialsRouteImport } from './routes/_authenticated/admin.testimonials'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminPodcastsRouteImport } from './routes/_authenticated/admin.podcasts'
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
 import { Route as AuthenticatedAdminNewsRouteImport } from './routes/_authenticated/admin.news'
+import { Route as AuthenticatedAdminMagazineRouteImport } from './routes/_authenticated/admin.magazine'
 import { Route as AuthenticatedAdminLeadershipRouteImport } from './routes/_authenticated/admin.leadership'
 import { Route as AuthenticatedAdminInitiativesRouteImport } from './routes/_authenticated/admin.initiatives'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
@@ -236,6 +238,12 @@ const AuthenticatedAdminSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminPodcastsRoute =
+  AuthenticatedAdminPodcastsRouteImport.update({
+    id: '/podcasts',
+    path: '/podcasts',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminPartnersRoute =
   AuthenticatedAdminPartnersRouteImport.update({
     id: '/partners',
@@ -247,6 +255,12 @@ const AuthenticatedAdminNewsRoute = AuthenticatedAdminNewsRouteImport.update({
   path: '/news',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminMagazineRoute =
+  AuthenticatedAdminMagazineRouteImport.update({
+    id: '/magazine',
+    path: '/magazine',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminLeadershipRoute =
   AuthenticatedAdminLeadershipRouteImport.update({
     id: '/leadership',
@@ -377,8 +391,10 @@ export interface FileRoutesByFullPath {
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
   '/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
+  '/admin/magazine': typeof AuthenticatedAdminMagazineRoute
   '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin/tiers': typeof AuthenticatedAdminTiersRoute
@@ -428,8 +444,10 @@ export interface FileRoutesByTo {
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
   '/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
+  '/admin/magazine': typeof AuthenticatedAdminMagazineRoute
   '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin/tiers': typeof AuthenticatedAdminTiersRoute
@@ -482,8 +500,10 @@ export interface FileRoutesById {
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/initiatives': typeof AuthenticatedAdminInitiativesRoute
   '/_authenticated/admin/leadership': typeof AuthenticatedAdminLeadershipRoute
+  '/_authenticated/admin/magazine': typeof AuthenticatedAdminMagazineRoute
   '/_authenticated/admin/news': typeof AuthenticatedAdminNewsRoute
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/_authenticated/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/_authenticated/admin/tiers': typeof AuthenticatedAdminTiersRoute
@@ -537,8 +557,10 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/initiatives'
     | '/admin/leadership'
+    | '/admin/magazine'
     | '/admin/news'
     | '/admin/partners'
+    | '/admin/podcasts'
     | '/admin/settings'
     | '/admin/testimonials'
     | '/admin/tiers'
@@ -588,8 +610,10 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/initiatives'
     | '/admin/leadership'
+    | '/admin/magazine'
     | '/admin/news'
     | '/admin/partners'
+    | '/admin/podcasts'
     | '/admin/settings'
     | '/admin/testimonials'
     | '/admin/tiers'
@@ -641,8 +665,10 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/initiatives'
     | '/_authenticated/admin/leadership'
+    | '/_authenticated/admin/magazine'
     | '/_authenticated/admin/news'
     | '/_authenticated/admin/partners'
+    | '/_authenticated/admin/podcasts'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/testimonials'
     | '/_authenticated/admin/tiers'
@@ -921,6 +947,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/podcasts': {
+      id: '/_authenticated/admin/podcasts'
+      path: '/podcasts'
+      fullPath: '/admin/podcasts'
+      preLoaderRoute: typeof AuthenticatedAdminPodcastsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/partners': {
       id: '/_authenticated/admin/partners'
       path: '/partners'
@@ -933,6 +966,13 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/admin/news'
       preLoaderRoute: typeof AuthenticatedAdminNewsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/magazine': {
+      id: '/_authenticated/admin/magazine'
+      path: '/magazine'
+      fullPath: '/admin/magazine'
+      preLoaderRoute: typeof AuthenticatedAdminMagazineRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/leadership': {
@@ -1099,8 +1139,10 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminInitiativesRoute: typeof AuthenticatedAdminInitiativesRoute
   AuthenticatedAdminLeadershipRoute: typeof AuthenticatedAdminLeadershipRoute
+  AuthenticatedAdminMagazineRoute: typeof AuthenticatedAdminMagazineRoute
   AuthenticatedAdminNewsRoute: typeof AuthenticatedAdminNewsRoute
   AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
+  AuthenticatedAdminPodcastsRoute: typeof AuthenticatedAdminPodcastsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminTestimonialsRoute: typeof AuthenticatedAdminTestimonialsRoute
   AuthenticatedAdminTiersRoute: typeof AuthenticatedAdminTiersRoute
@@ -1116,8 +1158,10 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminInitiativesRoute: AuthenticatedAdminInitiativesRoute,
   AuthenticatedAdminLeadershipRoute: AuthenticatedAdminLeadershipRoute,
+  AuthenticatedAdminMagazineRoute: AuthenticatedAdminMagazineRoute,
   AuthenticatedAdminNewsRoute: AuthenticatedAdminNewsRoute,
   AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
+  AuthenticatedAdminPodcastsRoute: AuthenticatedAdminPodcastsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminTestimonialsRoute: AuthenticatedAdminTestimonialsRoute,
   AuthenticatedAdminTiersRoute: AuthenticatedAdminTiersRoute,
