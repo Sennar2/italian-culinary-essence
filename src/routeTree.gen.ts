@@ -34,6 +34,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
 import { Route as AuthenticatedPortalPodcastsRouteImport } from './routes/_authenticated/portal.podcasts'
 import { Route as AuthenticatedPortalMembershipRouteImport } from './routes/_authenticated/portal.membership'
+import { Route as AuthenticatedPortalMagazineRouteImport } from './routes/_authenticated/portal.magazine'
 import { Route as AuthenticatedPortalAcademyRouteImport } from './routes/_authenticated/portal.academy'
 import { Route as AuthenticatedAdminWebsiteRouteImport } from './routes/_authenticated/admin.website'
 import { Route as AuthenticatedAdminTestimonialsRouteImport } from './routes/_authenticated/admin.testimonials'
@@ -183,6 +184,12 @@ const AuthenticatedPortalMembershipRoute =
   AuthenticatedPortalMembershipRouteImport.update({
     id: '/membership',
     path: '/membership',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalMagazineRoute =
+  AuthenticatedPortalMagazineRouteImport.update({
+    id: '/magazine',
+    path: '/magazine',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 const AuthenticatedPortalAcademyRoute =
@@ -349,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
+  '/portal/magazine': typeof AuthenticatedPortalMagazineRoute
   '/portal/membership': typeof AuthenticatedPortalMembershipRoute
   '/portal/podcasts': typeof AuthenticatedPortalPodcastsRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
@@ -394,6 +402,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
+  '/portal/magazine': typeof AuthenticatedPortalMagazineRoute
   '/portal/membership': typeof AuthenticatedPortalMembershipRoute
   '/portal/podcasts': typeof AuthenticatedPortalPodcastsRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
@@ -444,6 +453,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/_authenticated/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/_authenticated/portal/academy': typeof AuthenticatedPortalAcademyRouteWithChildren
+  '/_authenticated/portal/magazine': typeof AuthenticatedPortalMagazineRoute
   '/_authenticated/portal/membership': typeof AuthenticatedPortalMembershipRoute
   '/_authenticated/portal/podcasts': typeof AuthenticatedPortalPodcastsRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
@@ -494,6 +504,7 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/website'
     | '/portal/academy'
+    | '/portal/magazine'
     | '/portal/membership'
     | '/portal/podcasts'
     | '/portal/profile'
@@ -539,6 +550,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/testimonials'
     | '/portal/academy'
+    | '/portal/magazine'
     | '/portal/membership'
     | '/portal/podcasts'
     | '/portal/profile'
@@ -588,6 +600,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/testimonials'
     | '/_authenticated/admin/website'
     | '/_authenticated/portal/academy'
+    | '/_authenticated/portal/magazine'
     | '/_authenticated/portal/membership'
     | '/_authenticated/portal/podcasts'
     | '/_authenticated/portal/profile'
@@ -800,6 +813,13 @@ declare module '@tanstack/react-router' {
       path: '/membership'
       fullPath: '/portal/membership'
       preLoaderRoute: typeof AuthenticatedPortalMembershipRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/magazine': {
+      id: '/_authenticated/portal/magazine'
+      path: '/magazine'
+      fullPath: '/portal/magazine'
+      preLoaderRoute: typeof AuthenticatedPortalMagazineRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
     '/_authenticated/portal/academy': {
@@ -1042,6 +1062,7 @@ const AuthenticatedPortalAcademyRouteWithChildren =
 
 interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalAcademyRoute: typeof AuthenticatedPortalAcademyRouteWithChildren
+  AuthenticatedPortalMagazineRoute: typeof AuthenticatedPortalMagazineRoute
   AuthenticatedPortalMembershipRoute: typeof AuthenticatedPortalMembershipRoute
   AuthenticatedPortalPodcastsRoute: typeof AuthenticatedPortalPodcastsRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
@@ -1050,6 +1071,7 @@ interface AuthenticatedPortalRouteChildren {
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalAcademyRoute: AuthenticatedPortalAcademyRouteWithChildren,
+  AuthenticatedPortalMagazineRoute: AuthenticatedPortalMagazineRoute,
   AuthenticatedPortalMembershipRoute: AuthenticatedPortalMembershipRoute,
   AuthenticatedPortalPodcastsRoute: AuthenticatedPortalPodcastsRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
