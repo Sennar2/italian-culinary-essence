@@ -29,6 +29,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChaptersSlugRouteImport } from './routes/chapters.$slug'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminWebsiteRouteImport } from './routes/_authenticated/admin.website'
 import { Route as AuthenticatedAdminTestimonialsRouteImport } from './routes/_authenticated/admin.testimonials'
@@ -150,6 +151,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPortalIndexRoute =
+  AuthenticatedPortalIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -293,7 +300,7 @@ export interface FileRoutesByFullPath {
   '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/portal': typeof AuthenticatedPortalRoute
+  '/portal': typeof AuthenticatedPortalRouteWithChildren
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/portal/': typeof AuthenticatedPortalIndexRoute
   '/admin/website/banner': typeof AuthenticatedAdminWebsiteBannerRoute
   '/admin/website/chapters': typeof AuthenticatedAdminWebsiteChaptersRoute
   '/admin/website/contact': typeof AuthenticatedAdminWebsiteContactRoute
@@ -334,7 +342,6 @@ export interface FileRoutesByTo {
   '/partners': typeof PartnersRoute
   '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/portal': typeof AuthenticatedPortalRoute
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersRoute
@@ -347,6 +354,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/portal': typeof AuthenticatedPortalIndexRoute
   '/admin/website/banner': typeof AuthenticatedAdminWebsiteBannerRoute
   '/admin/website/chapters': typeof AuthenticatedAdminWebsiteChaptersRoute
   '/admin/website/contact': typeof AuthenticatedAdminWebsiteContactRoute
@@ -377,7 +385,7 @@ export interface FileRoutesById {
   '/podcasts': typeof PodcastsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/_authenticated/portal': typeof AuthenticatedPortalRoute
+  '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
   '/chapters/$slug': typeof ChaptersSlugRoute
   '/_authenticated/admin/academy': typeof AuthenticatedAdminAcademyRoute
   '/_authenticated/admin/chapters': typeof AuthenticatedAdminChaptersRoute
@@ -391,6 +399,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/testimonials': typeof AuthenticatedAdminTestimonialsRoute
   '/_authenticated/admin/website': typeof AuthenticatedAdminWebsiteRouteWithChildren
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/admin/website/banner': typeof AuthenticatedAdminWebsiteBannerRoute
   '/_authenticated/admin/website/chapters': typeof AuthenticatedAdminWebsiteChaptersRoute
   '/_authenticated/admin/website/contact': typeof AuthenticatedAdminWebsiteContactRoute
@@ -435,6 +444,7 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/website'
     | '/admin/'
+    | '/portal/'
     | '/admin/website/banner'
     | '/admin/website/chapters'
     | '/admin/website/contact'
@@ -462,7 +472,6 @@ export interface FileRouteTypes {
     | '/partners'
     | '/podcasts'
     | '/sitemap.xml'
-    | '/portal'
     | '/chapters/$slug'
     | '/admin/academy'
     | '/admin/chapters'
@@ -475,6 +484,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/testimonials'
     | '/admin'
+    | '/portal'
     | '/admin/website/banner'
     | '/admin/website/chapters'
     | '/admin/website/contact'
@@ -518,6 +528,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/testimonials'
     | '/_authenticated/admin/website'
     | '/_authenticated/admin/'
+    | '/_authenticated/portal/'
     | '/_authenticated/admin/website/banner'
     | '/_authenticated/admin/website/chapters'
     | '/_authenticated/admin/website/contact'
@@ -690,6 +701,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/': {
+      id: '/_authenticated/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -908,14 +926,25 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedPortalRouteChildren {
+  AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+}
+
+const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
+  AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+}
+
+const AuthenticatedPortalRouteWithChildren =
+  AuthenticatedPortalRoute._addFileChildren(AuthenticatedPortalRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
-  AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
+  AuthenticatedPortalRoute: typeof AuthenticatedPortalRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
-  AuthenticatedPortalRoute: AuthenticatedPortalRoute,
+  AuthenticatedPortalRoute: AuthenticatedPortalRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
