@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin } from "lucide-react";
 
@@ -19,12 +19,21 @@ type Props = {
   height?: number;
 };
 
-// Leaflet touches `window` at import time — load only on the client.
-const ClientMap = lazy(() => import("./ChaptersMap.client"));
+// Leaflet touches `window` at import time — load only on the client via a
+// runtime dynamic import (string preserved through Vite) so the SSR/server
+// bundle never references the client module statically.
+type ClientMapProps = { chapters: ChapterPin[] };
 
 export function ChaptersMap({ chapters, height = 460 }: Props) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const [Client, setClient] = useState<ComponentType<ClientMapProps> | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    import("./ChaptersMap.client").then((m) => {
+      if (alive) setClient(() => m.default);
+    });
+    return () => { alive = false; };
+  }, []);
 
   const pins = chapters.filter((c) => c.lat != null && c.lng != null && !Number.isNaN(Number(c.lat)) && !Number.isNaN(Number(c.lng)));
 
@@ -45,13 +54,7 @@ export function ChaptersMap({ chapters, height = 460 }: Props) {
 
   return (
     <div className="relative w-full overflow-hidden border border-border bg-cream" style={{ height }}>
-      {mounted ? (
-        <Suspense fallback={<MapSkeleton height={height} />}>
-          <ClientMap chapters={pins} />
-        </Suspense>
-      ) : (
-        <MapSkeleton height={height} />
-      )}
+      {Client ? <Client chapters={pins} /> : <MapSkeleton height={height} />}
     </div>
   );
 }
