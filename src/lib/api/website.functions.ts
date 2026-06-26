@@ -167,6 +167,8 @@ const navSchema = z.object({
   sort_order: z.number().int().optional(),
   active: z.boolean().optional(),
   external: z.boolean().optional(),
+  in_more_menu: z.boolean().optional(),
+  is_cta: z.boolean().optional(),
 });
 
 export const adminListNav = createServerFn({ method: "GET" })

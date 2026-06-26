@@ -1,141 +1,70 @@
 
-# ICC Full Membership Platform — Build Plan
+## 1. Real logo everywhere
 
-Build everything in one pass: public website upgrades, member portal, full academy with SCORM runtime, magazine, podcasts, and a vastly expanded admin CMS. Visual style stays as-is (cream/forest/gold, serif headings, tricolore accents).
+- Download the SVG you linked and upload it as a Lovable Asset (`src/assets/icc-logo.svg.asset.json`).
+- Rewrite `src/components/site/Logo.tsx` to render that asset as an `<img>`, with `variant="dark"|"light"` controlling a CSS filter (light = invert/brighten) so it works on cream and on forest green.
+- Replace every fake "ICC" mark in: `SiteHeader`, `SiteFooter`, Hero badge (homepage), Admin sidebar (`admin.tsx`), Portal sidebar, mobile menu. No more SVG circles with "ICC" text.
 
----
+## 2. Header redesign
 
-## 1. Database (one migration)
+Rewrite `src/components/site/SiteHeader.tsx`:
 
-**New tables** (all in `public`, all with GRANTs + RLS):
+- Single row, fixed height (72px desktop / 64px mobile), `grid-cols-[auto_1fr_auto]`, logo left, nav centered, CTA right, all `items-center`.
+- Logo container `shrink-0`, max-height 48px, never cropped.
+- Desktop primary nav = max 4 links + a **More** dropdown (Radix `DropdownMenu`).
+- Move utility row (EN / search / socials) into the More dropdown footer instead of a separate top bar — eliminates the second row that's pushing things around and causing overflow.
+- `Become a Member` CTA stays right; on screens < `lg` it collapses into the mobile sheet.
+- Mobile: logo left, hamburger right, full Sheet menu with every link + CTA + socials.
+- Add `overflow-x-hidden` to `<body>` via `styles.css` to kill page-level sideways scroll.
 
-- `membership_tiers` — name, slug, price_cents, currency, billing_frequency (`monthly|yearly|one_off|on_enquiry`), description, benefits (text[]), access_level, payment_link, cta_label, featured, active, sort_order
-- `members` — `user_id` (FK auth.users, unique), full_name, email, phone, country, city, profession, company, tier_id, status (`pending|active|suspended|expired`), join_date, renewal_date, payment_status, payment_reference, internal_notes
-- `magazine_issues` — title, slug, cover_url, issue_date, summary, public_preview, published, sort_order
-- `magazine_articles` — issue_id, title, slug, author, body, cover_url, sort_order, published
-- `podcast_episodes` — title, slug, episode_number, description, audio_url, cover_url, spotify_url, apple_url, youtube_url, category, publish_date, visibility (`public|members|tier`), published
-- `academy_modules` — title, slug, category, description, cover_url, duration_minutes, certificate_eligible, passing_score, published, sort_order  *(separate from existing `academy_items` which becomes the public showcase)*
-- `academy_lessons` — module_id, title, sort_order, kind (`video|pdf|scorm|text`), video_url, pdf_url, scorm_package_path, scorm_launch_url, body
-- `member_course_progress` — member_id, module_id, lesson_id, status, score, scorm_suspend_data, completed_at
-- `certificates` — member_id, module_id, issued_at, certificate_number, pdf_url (nullable placeholder)
-- `content_access` — generic gating: `content_type` (`module|news|magazine_issue|podcast|event|article`), `content_id`, `tier_id`. No rows for a content_id = all active members; rows = restricted to those tiers.
+## 3. Admin-controlled nav
 
-**Existing tables extended:**
-- `news` add `visibility`
-- `events` add `visibility`, `booking_url`, `sponsors text[]`
-- `app_role` enum adds `'member'`
+Extend `nav_links` table with two booleans: `in_more_menu` (default false) and `is_cta` (default false). Migration adds the columns.
 
-**Storage buckets** (via tool):
-- `media` already exists (public)
-- `scorm` (private) — unzipped SCORM packages
-- `magazine` (private) — magazine assets
-- `certificates` (private) — future PDFs
+Update `admin.website.nav.tsx` CrudShell fields to expose:
+- Label, URL, Location (header / footer_*), Sort order, Active, External, **Show in More menu**, **Render as CTA button**.
 
-**RLS pattern:**
-- Admin (`has_role(uid,'admin')`) → full access on every table.
-- Self-scoped (`members`, `member_course_progress`, `certificates`) → `auth.uid()` only.
-- Public reads (`membership_tiers` active, public news/magazine/podcasts) → narrow `TO anon, authenticated` SELECT.
-- Tier-gated content fetched via server fns that join `content_access` + member tier, never raw client.
+Header reads `nav_links` where `location='header' AND active`, splits into:
+- CTA (if `is_cta`)
+- More-menu items (`in_more_menu`)
+- Primary nav (the rest, capped to first 4 by sort_order, overflow auto-pushed into More).
 
----
+Seed migration sets the 4 primary (About, Academy, Events, Membership) and the 7 More items you listed.
 
-## 2. Auth & roles
+## 4. Contact details from admin only
 
-- Public signup at `/auth` creates an `auth.users` row + matching `members` row with `status='pending'` via `handle_new_member()` trigger.
-- `user_roles`: `admin`, `member`. Admin assigns `member` when activating.
-- Two protected subtrees:
-  - `_authenticated/admin/*` — admin only (existing)
-  - `_authenticated/portal/*` — any signed-in user; pages show a "Pending activation" CTA if `status≠active`
+- `SiteFooter` and `src/routes/contact.tsx` already read `site_settings` — audit every hardcoded fallback (Rome address, +39 number, info@/press@ examples) and **remove them**. Render each field only when present (`{settings.contact_email && …}`); no placeholder text.
+- Ensure `admin.website.contact.tsx` writes to the same keys: `contact_email`, `press_email`, `contact_phone`, `contact_address`, `head_office`, plus social URLs already in `admin.settings`.
+- Contact form: send to `settings.contact_email` (server fn); falls back to silently storing in `contact_messages` if no email set.
+- Footer social icons sourced from `nav_links` (location `footer_social`) OR `site_settings.*_url`, hide if both empty.
 
----
+## 6 + 7. Real interactive map (Leaflet)
 
-## 3. Public website additions
+- `bun add leaflet react-leaflet @types/leaflet`. Tailwind v4: `@import "leaflet/dist/leaflet.css";` at top of `src/styles.css`.
+- New `src/components/site/ChaptersMap.tsx`: client-only `<MapContainer>` (loaded via `ClientOnly` wrapper to avoid SSR `window` errors) with OSM tiles, custom gold/forest marker (CSS-styled `divIcon`, no broken default-marker images), `Popup` showing chapter name, city, country, lead, email.
+- Source data via existing `getChapters` server fn, filtered to `published=true AND lat IS NOT NULL`.
+- Empty state: centered "Chapters coming soon" card on a muted forest tile background.
+- Homepage section rewritten: eyebrow "Global Network", H2 "ICC Around the World", subtitle as specified, the live map, then CTA button "Explore Chapters" → `/chapters`.
+- `/chapters` page uses the same `ChaptersMap` at the top, list/grid below.
+- Delete the dotted decorative `WorldMap.tsx` from public usage (keep file or delete — I'll delete).
 
-- `/membership` rebuilt from `membership_tiers`. Each card: price, frequency, benefits, "Join now" → `payment_link` in new tab when present, else `/auth?intent=join&tier=<slug>`.
-- New `/podcasts` + `/magazine` public routes (preview only for gated items, "Members only" overlay otherwise).
-- News/events extended with visibility chips.
-- Hero/banner/gallery/footer/nav remain admin-editable as today.
+## 8. Admin Chapters
 
----
+`admin.chapters.tsx` already exists. Audit and ensure CrudShell fields include: name, slug, city, country, address, lat, lng, email, lead/president, hero_image (ImageUploader), published toggle. Add any missing fields. No schema change needed — `chapters` table has all columns.
 
-## 4. Member Portal (`/portal`)
+## 9. Layout / overflow fixes
 
-Routes under `_authenticated/portal/`:
+- Global: `html, body { overflow-x: hidden; max-width: 100vw; }` in `styles.css`.
+- Audit `.container-icc`, hero, world map section, chapters grid, footer for any element wider than `100vw` (the current header utility bar + 11 nav links is the main culprit — fixed by §2).
+- Add `min-w-0` to flex children that hold text in header/footer; `shrink-0` on logo and CTA.
 
-- `index.tsx` — Dashboard: welcome, tier badge, renewal, latest 3 podcasts/news, upcoming events, course progress, quick links.
-- `membership.tsx` — status, tier, benefits, renewal/payment link.
-- `academy.tsx` + `academy.$slug.tsx` — modules the member's tier can access; module page = lesson list, progress bar, player area, Mark Complete.
-- `news.tsx`, `magazine.tsx`, `magazine.$slug.tsx`, `podcasts.tsx`, `events.tsx`, `profile.tsx`.
+## Technical notes (for the agent)
 
-All reads go through `portal.functions.ts` server fns guarded by `requireSupabaseAuth` + a `requireActiveMember()` helper enforcing `content_access`.
+- DB migration: `ALTER TABLE nav_links ADD COLUMN in_more_menu boolean NOT NULL DEFAULT false, ADD COLUMN is_cta boolean NOT NULL DEFAULT false;` + seed the 11 header rows (delete existing header rows first, reinsert clean set).
+- Leaflet must be dynamically imported / wrapped in a `ClientOnly` because the package touches `window` at import time. Use `lazy()` + `<Suspense>` or a small `if (typeof window === 'undefined') return null` wrapper component.
+- Logo asset: `curl` the SVG URL → `lovable-assets create --file /tmp/icc-logo.svg --filename icc-logo.svg > src/assets/icc-logo.svg.asset.json`.
+- Brand palette, typography and tricolore details remain untouched.
 
----
+## Out of scope
 
-## 5. Academy + SCORM runtime
-
-- **Upload**: admin uploads SCORM `.zip` in the lesson editor (≤ 50MB). Server fn `uploadScormPackage` (admin only) stores to the `scorm` bucket, unzips server-side with `fflate` (pure-JS, Worker-safe) into `scorm/<module>/<lesson>/`, detects `index.html` / `imsmanifest.xml` launch path, saves the relative path.
-- **Launch URL alternative**: paste an external launch URL instead.
-- **Player**: `<iframe>` to a signed URL for `index.html`. The iframe includes a small `scorm-api.html` wrapper that exposes `window.API` (SCORM 1.2) + `window.API_1484_11` (2004 core verbs) and forwards `LMSSetValue`/`Commit`/`LMSFinish` to the parent via `postMessage`. Parent batches and calls `saveScormProgress` server fn → writes `member_course_progress` (status, score, suspend_data).
-- **Completion + certificate**: when all certificate-eligible lessons in a module are complete, `issueCertificateIfEligible` inserts a `certificates` row with a generated number. PDF generation deferred (`pdf_url` null; portal shows "Certificate issued — PDF coming soon").
-- Scope: SCORM 1.2 core verbs (`cmi.core.lesson_status`, `cmi.core.score.raw`, `cmi.suspend_data`); 2004 sequencing not implemented. Single-SCO packages assumed.
-
----
-
-## 6. Admin CMS expansion
-
-New routes under `_authenticated/admin/`:
-
-- `members.tsx` + `members.$id.tsx` — list/edit, change tier, status, notes, view progress + certificates, "Send reset link" via `supabaseAdmin.auth.admin.generateLink`.
-- `tiers.tsx` — `CrudShell`.
-- `access.tsx` — matrix UI (rows = content items, cols = tiers; checkboxes write `content_access`).
-- `academy-modules.tsx` + `academy-modules.$id.tsx` — module + nested lessons editor with SCORM uploader.
-- `magazine.tsx` + `magazine.$id.tsx` — issues + articles.
-- `podcasts.tsx` — CRUD with audio URL/upload + platform links + visibility.
-- `events.tsx` — extend existing with visibility, booking_url, sponsors.
-
-Sidebar regrouped: **Overview / Members / Content (News, Magazine, Podcasts, Events) / Academy (Modules, Certificates) / Access Control / Website / System**.
-
----
-
-## 7. Server functions
-
-New `src/lib/api/` modules (all client-safe; `client.server` imported only inside handlers):
-
-- `members.functions.ts` — `getMyMember`, `updateMyProfile`, admin `listMembers`, `saveMember`, `setMemberTier`, `setMemberStatus`, `sendMemberResetLink`
-- `tiers.functions.ts` — admin CRUD + public `listActiveTiers`
-- `portal.functions.ts` — `myDashboard`, `myAcademy`, `myModule(slug)`, `myMagazine`, `myPodcasts`, `myNews`, `myEvents`
-- `academy-admin.functions.ts` — module/lesson CRUD, `uploadScormPackage`, signed URL minting
-- `scorm.functions.ts` — `getScormLaunchUrl`, `saveScormProgress`, `markLessonComplete`, `issueCertificateIfEligible`
-- `magazine.functions.ts`, `podcasts.functions.ts` — admin CRUD + public lists
-- `access.functions.ts` — admin matrix read/write
-
----
-
-## 8. Build order
-
-1. Migration (tables + GRANTs + RLS + role enum + `handle_new_member` trigger) and storage buckets.
-2. Auth flow update (signup → pending member; `/auth?intent=join` carries tier).
-3. Public `/membership`, `/podcasts`, `/magazine` rewires.
-4. Member portal shell + dashboard + membership + profile.
-5. Academy module + lesson editor in admin.
-6. SCORM upload + unzip + iframe runtime + progress save.
-7. Magazine + podcasts admin + portal views.
-8. Members admin (list, edit, tier change, reset link).
-9. Access-control matrix.
-10. Mobile QA at 390px + admin desktop pass.
-
----
-
-## 9. Out of scope (deferred, called out so nothing is hidden)
-
-- Real Stripe/PayPal checkout — `payment_link` is an external URL pasted in admin.
-- Generated certificate PDFs — record created, PDF not rendered.
-- SCORM 2004 sequencing, multi-SCO packages.
-- Email delivery beyond Supabase auth/reset emails.
-- i18n.
-
-## 10. Risks
-
-- SCORM packages vary. The runtime targets standard Articulate/iSpring/Captivate SCORM 1.2 exports; exotic packages may need per-vendor tweaks.
-- Worker CPU/time limits → SCORM upload capped at 50MB; documented in the uploader.
-- Very large surface area — plan on 1–2 polish turns after initial build.
+- No new pages, no copy rewrites beyond the homepage map section, no leadership/news/events changes.

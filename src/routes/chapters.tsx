@@ -3,7 +3,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { PageHeader } from "@/components/site/PageHeader";
-import { WorldMap } from "@/components/site/WorldMap";
+import { ChaptersMap } from "@/components/site/ChaptersMap";
 import { resolveImage } from "@/lib/chapter-images";
 import { getChapters } from "@/lib/api/public-content.functions";
 
@@ -45,7 +45,7 @@ function ChaptersPage() {
 
       <section className="bg-cream border-b border-border/60">
         <div className="container-icc py-14 md:py-16">
-          <WorldMap chapters={data} />
+          <ChaptersMap chapters={data} height={520} />
         </div>
       </section>
 

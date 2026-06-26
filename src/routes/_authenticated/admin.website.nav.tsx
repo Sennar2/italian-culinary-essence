@@ -16,6 +16,8 @@ export const Route = createFileRoute("/_authenticated/admin/website/nav")({
         { key: "label", label: "Label" },
         { key: "url", label: "URL" },
         { key: "sort_order", label: "Order" },
+        { key: "in_more_menu", label: "More", render: (v) => v ? "✓" : "—" },
+        { key: "is_cta", label: "CTA", render: (v) => v ? "✓" : "—" },
         { key: "external", label: "External", render: (v) => v ? "↗" : "—" },
         { key: "active", label: "Live", render: (v) => v ? "Yes" : "—" },
       ]}
@@ -31,10 +33,12 @@ export const Route = createFileRoute("/_authenticated/admin/website/nav")({
         ]},
         { name: "social_platform", label: "Social platform", placeholder: "instagram / facebook / linkedin / youtube / x" },
         { name: "sort_order", label: "Sort order", type: "number" },
+        { name: "in_more_menu", label: "Show in More dropdown (header only)", type: "checkbox" },
+        { name: "is_cta", label: "Render as CTA button (header only)", type: "checkbox" },
         { name: "external", label: "External link", type: "checkbox" },
         { name: "active", label: "Active", type: "checkbox" },
       ]}
-      defaults={{ label: "", url: "", location: "header", sort_order: 0, external: false, active: true }}
+      defaults={{ label: "", url: "", location: "header", sort_order: 0, external: false, active: true, in_more_menu: false, is_cta: false }}
     />
   ),
 });
