@@ -920,6 +920,8 @@ export type Database = {
           created_at: string
           external: boolean
           id: string
+          in_more_menu: boolean
+          is_cta: boolean
           label: string
           location: string
           social_platform: string | null
@@ -932,6 +934,8 @@ export type Database = {
           created_at?: string
           external?: boolean
           id?: string
+          in_more_menu?: boolean
+          is_cta?: boolean
           label: string
           location?: string
           social_platform?: string | null
@@ -944,6 +948,8 @@ export type Database = {
           created_at?: string
           external?: boolean
           id?: string
+          in_more_menu?: boolean
+          is_cta?: boolean
           label?: string
           location?: string
           social_platform?: string | null
