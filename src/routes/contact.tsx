@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { PageHeader } from "@/components/site/PageHeader";
 import { submitContact } from "@/lib/api/forms.functions";
+import { getSiteSettings } from "@/lib/api/website.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({
@@ -21,33 +23,45 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const setFn = useServerFn(getSiteSettings);
+  const { data: s } = useQuery({ queryKey: ["site-settings"], queryFn: () => setFn() });
+  const hasAny = !!(s?.contact_email || s?.press_email || s?.contact_phone || s?.contact_address || s?.head_office);
   return (
     <>
       <PageHeader
         eyebrow="Contact"
         title="Speak with the Consortium"
-        intro="Reach our headquarters in Rome or any of our international chapters. For specific enquiries, please choose a department below."
+        intro="Reach our headquarters or any of our international chapters. For specific enquiries, please choose a department below."
       />
       <section className="container-icc py-16 grid gap-10 lg:grid-cols-[1fr_1.2fr]">
         <div className="space-y-8">
-          <div>
-            <p className="text-[11px] tracking-[0.22em] uppercase text-gold">Headquarters</p>
-            <h2 className="mt-2 font-display text-2xl">Rome, Italy</h2>
-            <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-              <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 text-gold" /> Via di Villa Emiliani, 10 — 00197 Roma</li>
-              <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-gold" /> info@icc-international.org</li>
-              <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 text-gold" /> +39 06 1234 567</li>
-            </ul>
-          </div>
-          <div>
-            <p className="text-[11px] tracking-[0.22em] uppercase text-gold">Departments</p>
-            <ul className="mt-3 grid gap-2 text-sm text-muted-foreground">
-              <li><span className="text-foreground">Membership</span> — membership@icc-international.org</li>
-              <li><span className="text-foreground">Academy</span> — academy@icc-international.org</li>
-              <li><span className="text-foreground">Press</span> — press@icc-international.org</li>
-              <li><span className="text-foreground">Partnerships</span> — partnerships@icc-international.org</li>
-            </ul>
-          </div>
+          {hasAny ? (
+            <div>
+              <p className="text-[11px] tracking-[0.22em] uppercase text-gold">Headquarters</p>
+              {s?.head_office && <h2 className="mt-2 font-display text-2xl">{s.head_office}</h2>}
+              <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+                {s?.contact_address && (
+                  <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 text-gold shrink-0" /> <span>{s.contact_address}</span></li>
+                )}
+                {s?.contact_email && (
+                  <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-gold shrink-0" /> <a href={`mailto:${s.contact_email}`} className="hover:text-forest">{s.contact_email}</a></li>
+                )}
+                {s?.contact_phone && (
+                  <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 text-gold shrink-0" /> <a href={`tel:${s.contact_phone.replace(/\s+/g, "")}`} className="hover:text-forest">{s.contact_phone}</a></li>
+                )}
+              </ul>
+            </div>
+          ) : (
+            <div className="border border-border bg-card p-6">
+              <p className="text-sm text-muted-foreground">Contact details will appear here once added in the admin portal.</p>
+            </div>
+          )}
+          {s?.press_email && (
+            <div>
+              <p className="text-[11px] tracking-[0.22em] uppercase text-gold">Press</p>
+              <p className="mt-2 text-sm"><a href={`mailto:${s.press_email}`} className="hover:text-forest">{s.press_email}</a></p>
+            </div>
+          )}
         </div>
         <ContactForm />
       </section>
