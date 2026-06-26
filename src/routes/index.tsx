@@ -3,7 +3,8 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, ChefHat, Shield, Globe2, Sprout } from "lucide-react";
 import { Eyebrow, FlagRule } from "@/components/site/Eyebrow";
 import { StatCounter } from "@/components/site/StatCounter";
-import { WorldMap } from "@/components/site/WorldMap";
+import { ChaptersMap } from "@/components/site/ChaptersMap";
+import iccLogo from "@/assets/icc-logo.svg.asset.json";
 import { resolveImage } from "@/lib/chapter-images";
 import {
   getInitiatives,
@@ -203,20 +204,9 @@ function GallerySection({ items }: { items: { id: string; image_url: string; tit
 function Seal() {
   return (
     <div className="absolute -top-2 right-2 md:-top-4 md:-right-4 z-20">
-      <svg viewBox="0 0 130 130" className="h-24 w-24 md:h-32 md:w-32">
-        <defs>
-          <path id="circle" d="M 65,65 m -52,0 a 52,52 0 1,1 104,0 a 52,52 0 1,1 -104,0" />
-        </defs>
-        <circle cx="65" cy="65" r="62" fill="var(--color-cream)" stroke="var(--color-gold)" strokeWidth="1" />
-        <circle cx="65" cy="65" r="55" fill="none" stroke="var(--color-gold)" strokeWidth="0.5" opacity="0.6" />
-        <text fill="var(--color-forest)" fontFamily="Cormorant Garamond, serif" fontSize="9" letterSpacing="2">
-          <textPath href="#circle" startOffset="2%">AUTHENTIC ITALIAN CUISINE</textPath>
-        </text>
-        <text x="65" y="58" textAnchor="middle" fontFamily="Cormorant Garamond, serif" fontSize="20" fill="var(--color-forest)" fontWeight="500">ICC</text>
-        <text x="65" y="70" textAnchor="middle" fontSize="6" letterSpacing="2" fill="var(--color-gold)">INTERNATIONAL</text>
-        <text x="65" y="84" textAnchor="middle" fontSize="11" fill="var(--color-it-red)" fontFamily="Cormorant Garamond, serif">2026</text>
-        <text x="65" y="95" textAnchor="middle" fontSize="5" letterSpacing="2" fill="var(--color-forest)" opacity="0.7">QUALITY · CULTURE · TRADITION</text>
-      </svg>
+      <div className="h-24 w-24 md:h-32 md:w-32 rounded-full bg-cream border border-gold/60 shadow-[0_8px_24px_-12px_rgba(15,61,46,0.35)] flex items-center justify-center p-3">
+        <img src={iccLogo.url} alt="ICC International seal" className="h-full w-full object-contain" />
+      </div>
     </div>
   );
 }
@@ -292,17 +282,24 @@ function MapSection({ chapters }: { chapters: Awaited<ReturnType<typeof getActiv
     <section className="bg-cream border-t border-border/60">
       <div className="container-icc py-16 md:py-24">
         <div className="max-w-2xl">
-          <Eyebrow>Our World Map</Eyebrow>
+          <Eyebrow>Global Network</Eyebrow>
           <h2 className="mt-4 font-display text-3xl md:text-5xl text-foreground">
-            ICC presence around the world
+            ICC Around the World
           </h2>
           <p className="mt-4 text-muted-foreground max-w-prose">
-            Our chapters anchor the Consortium in the cities where Italian gastronomy
-            travels, teaches and innovates. Tap a pin to discover a chapter.
+            Explore our growing network of chapters and hospitality professionals.
           </p>
         </div>
         <div className="mt-10">
-          <WorldMap chapters={chapters} />
+          <ChaptersMap chapters={chapters} height={520} />
+        </div>
+        <div className="mt-8">
+          <Link
+            to="/chapters"
+            className="inline-flex items-center gap-3 bg-forest text-cream px-7 py-4 text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-forest-deep transition-colors"
+          >
+            Explore Chapters <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
       </div>
     </section>
