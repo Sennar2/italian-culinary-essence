@@ -29,7 +29,7 @@ export function ChaptersMap({ chapters, height = 460 }: Props) {
 
   useEffect(() => {
     let alive = true;
-    import("./ChaptersMap.client").then((m) => {
+    import("./LeafletMap").then((m) => {
       if (alive) setClient(() => m.default);
     });
     return () => { alive = false; };
