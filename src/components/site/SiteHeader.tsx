@@ -2,26 +2,41 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getNavLinks, getSiteSettings } from "@/lib/api/website.functions";
-import { useEffect, useState } from "react";
-import { Menu, X, Search, Facebook, Instagram, Linkedin, Youtube, Twitter } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Logo } from "./Logo";
-import { Button } from "@/components/ui/button";
 
-const FALLBACK_NAV: { label: string; url: string; external: boolean }[] = [
+type NavRow = {
+  label: string;
+  url: string;
+  location: string;
+  external: boolean;
+  social_platform?: string | null;
+  sort_order: number;
+  in_more_menu?: boolean;
+  is_cta?: boolean;
+};
+
+type NavItem = { label: string; url: string; external: boolean };
+
+const FALLBACK_PRIMARY: NavItem[] = [
   { label: "About", url: "/about", external: false },
+  { label: "Academy", url: "/academy", external: false },
+  { label: "Events", url: "/events", external: false },
+  { label: "Membership", url: "/membership", external: false },
+];
+const FALLBACK_MORE: NavItem[] = [
   { label: "Chapters", url: "/chapters", external: false },
   { label: "Leadership", url: "/leadership", external: false },
-  { label: "Academy", url: "/academy", external: false },
   { label: "Initiatives", url: "/initiatives", external: false },
-  { label: "Events", url: "/events", external: false },
   { label: "Gallery", url: "/gallery", external: false },
   { label: "News", url: "/news", external: false },
-  { label: "Membership", url: "/membership", external: false },
   { label: "Partners", url: "/partners", external: false },
   { label: "Contact", url: "/contact", external: false },
 ];
+const FALLBACK_CTA: NavItem = { label: "Become a Member", url: "/membership", external: false };
 
-type NavRow = { label: string; url: string; location: string; external: boolean; social_platform?: string | null; sort_order: number };
+const MAX_PRIMARY = 4;
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
@@ -29,19 +44,28 @@ export function SiteHeader() {
   const navFn = useServerFn(getNavLinks);
   const setFn = useServerFn(getSiteSettings);
   const { data: navRows } = useQuery({ queryKey: ["nav-links"], queryFn: () => navFn() });
-  const { data: settings } = useQuery({ queryKey: ["site-settings"], queryFn: () => setFn() });
+  useQuery({ queryKey: ["site-settings"], queryFn: () => setFn() });
 
-  const headerLinks = (navRows as NavRow[] | undefined)?.filter((n) => n.location === "header");
-  const nav = (headerLinks && headerLinks.length > 0) ? headerLinks.map((n) => ({ label: n.label, url: n.url, external: n.external })) : FALLBACK_NAV;
+  const headerRows = ((navRows as NavRow[] | undefined) ?? []).filter((n) => n.location === "header");
 
-  const socials = (navRows as NavRow[] | undefined)?.filter((n) => n.location === "footer_social") ?? [];
-  const settingsSocials = [
-    { platform: "facebook", url: settings?.facebook_url },
-    { platform: "instagram", url: settings?.instagram_url },
-    { platform: "linkedin", url: settings?.linkedin_url },
-    { platform: "youtube", url: settings?.youtube_url },
-    { platform: "x", url: settings?.x_url },
-  ].filter((s) => s.url);
+  let primary: NavItem[];
+  let more: NavItem[];
+  let cta: NavItem;
+  if (headerRows.length === 0) {
+    primary = FALLBACK_PRIMARY;
+    more = FALLBACK_MORE;
+    cta = FALLBACK_CTA;
+  } else {
+    const sorted = [...headerRows].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    const ctaRow = sorted.find((n) => n.is_cta);
+    cta = ctaRow ? { label: ctaRow.label, url: ctaRow.url, external: ctaRow.external } : FALLBACK_CTA;
+    const nonCta = sorted.filter((n) => !n.is_cta);
+    const explicitPrimary = nonCta.filter((n) => !n.in_more_menu);
+    const explicitMore = nonCta.filter((n) => n.in_more_menu);
+    const overflow = explicitPrimary.slice(MAX_PRIMARY);
+    primary = explicitPrimary.slice(0, MAX_PRIMARY).map((n) => ({ label: n.label, url: n.url, external: n.external }));
+    more = [...overflow, ...explicitMore].map((n) => ({ label: n.label, url: n.url, external: n.external }));
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -57,54 +81,45 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "bg-cream/95 backdrop-blur-md border-b border-border shadow-[0_1px_0_rgba(0,0,0,0.02)]"
-          : "bg-cream/80 backdrop-blur-sm"
+          ? "bg-cream/95 backdrop-blur-md border-b border-border"
+          : "bg-cream/90 backdrop-blur-sm border-b border-transparent"
       }`}
     >
-      {/* Top utility bar (desktop) */}
-      <div className="hidden lg:block border-b border-border/40">
-        <div className="container-icc flex items-center justify-end gap-6 py-2 text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
-          <SocialRow size="sm" socials={socials} settingsSocials={settingsSocials} />
-          <span className="h-3 w-px bg-border" aria-hidden />
-          <button type="button" className="hover:text-forest">EN</button>
-          <button type="button" className="hover:text-forest" aria-label="Search"><Search className="h-3.5 w-3.5" /></button>
-        </div>
-      </div>
+      <div className="container-icc grid grid-cols-[auto_1fr_auto] items-center gap-4 md:gap-8 h-16 md:h-20">
+        <Logo height={44} className="md:[&_img]:!h-12" />
 
-      <div className="container-icc flex items-center justify-between gap-6 py-4 lg:py-5">
-        <Logo />
-        <nav className="hidden xl:flex items-center gap-7 text-[12px] tracking-[0.16em] uppercase">
-          {nav.map((n) => <NavItem key={n.label + n.url} item={n} />)}
+        {/* Desktop nav */}
+        <nav className="hidden lg:flex items-center justify-center gap-8 min-w-0 text-[11px] tracking-[0.22em] uppercase font-medium">
+          {primary.map((n) => <DesktopNavLink key={n.label + n.url} item={n} />)}
+          {more.length > 0 && <MoreMenu items={more} />}
         </nav>
-        <div className="flex items-center gap-3">
-          <Button asChild className="hidden md:inline-flex bg-gold text-forest hover:bg-gold/90 rounded-none px-5 py-5 text-[11px] tracking-[0.22em] uppercase font-medium h-auto">
-            <Link to="/membership">Become a Member</Link>
-          </Button>
+        <div className="lg:hidden" aria-hidden />
+
+        <div className="flex items-center justify-end gap-2 shrink-0">
+          <CtaButton item={cta} className="hidden md:inline-flex" />
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="xl:hidden inline-flex items-center justify-center h-11 w-11 -mr-2 text-forest"
+            aria-expanded={open}
+            className="lg:hidden inline-flex items-center justify-center h-11 w-11 -mr-2 text-forest"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile / tablet menu */}
+      {/* Mobile menu */}
       {open && (
-        <div className="xl:hidden border-t border-border bg-cream">
-          <nav className="container-icc flex flex-col py-4">
-            {nav.map((n) => (
-              <NavItem key={n.label + n.url} item={n} mobile onClick={() => setOpen(false)} />
+        <div className="lg:hidden border-t border-border bg-cream">
+          <nav className="container-icc flex flex-col py-2">
+            {[...primary, ...more].map((n) => (
+              <MobileNavLink key={n.label + n.url} item={n} onClick={() => setOpen(false)} />
             ))}
-            <Button asChild className="mt-4 bg-gold text-forest hover:bg-gold/90 rounded-none py-5 text-[12px] tracking-[0.22em] uppercase font-medium h-auto">
-              <Link to="/membership" onClick={() => setOpen(false)}>Become a Member</Link>
-            </Button>
-            <div className="mt-4 flex items-center gap-5 py-2 text-muted-foreground">
-              <SocialRow size="md" socials={socials} settingsSocials={settingsSocials} />
+            <div className="py-4">
+              <CtaButton item={cta} fullWidth onClick={() => setOpen(false)} />
             </div>
           </nav>
         </div>
@@ -113,47 +128,83 @@ export function SiteHeader() {
   );
 }
 
-function NavItem({ item, mobile, onClick }: { item: { label: string; url: string; external: boolean }; mobile?: boolean; onClick?: () => void }) {
-  const cls = mobile
-    ? "py-3 text-[13px] tracking-[0.16em] uppercase text-foreground/80 border-b border-border/60 last:border-b-0"
-    : "text-foreground/80 hover:text-forest transition-colors";
+function DesktopNavLink({ item }: { item: NavItem }) {
+  const cls = "text-foreground/80 hover:text-forest transition-colors whitespace-nowrap";
   if (item.external || /^https?:\/\//i.test(item.url)) {
-    return <a href={item.url} className={cls} target="_blank" rel="noopener noreferrer" onClick={onClick}>{item.label}</a>;
+    return <a href={item.url} className={cls} target="_blank" rel="noopener noreferrer">{item.label}</a>;
   }
   return (
-    <Link to={item.url as never} className={cls} activeProps={{ className: mobile ? `${cls} text-forest` : "text-forest" }} onClick={onClick}>
+    <Link to={item.url as never} className={cls} activeProps={{ className: "text-forest whitespace-nowrap" }}>
       {item.label}
     </Link>
   );
 }
 
-function SocialIcon({ platform, className }: { platform: string; className?: string }) {
-  const p = platform.toLowerCase();
-  if (p === "facebook") return <Facebook className={className} />;
-  if (p === "instagram") return <Instagram className={className} />;
-  if (p === "linkedin") return <Linkedin className={className} />;
-  if (p === "youtube") return <Youtube className={className} />;
-  if (p === "x" || p === "twitter") return <Twitter className={className} />;
-  return null;
+function MobileNavLink({ item, onClick }: { item: NavItem; onClick: () => void }) {
+  const cls = "py-3 text-[12px] tracking-[0.22em] uppercase text-foreground/80 border-b border-border/60";
+  if (item.external || /^https?:\/\//i.test(item.url)) {
+    return <a href={item.url} className={cls} target="_blank" rel="noopener noreferrer" onClick={onClick}>{item.label}</a>;
+  }
+  return (
+    <Link to={item.url as never} className={cls} activeProps={{ className: `${cls} text-forest` }} onClick={onClick}>
+      {item.label}
+    </Link>
+  );
 }
 
-function SocialRow({ socials, settingsSocials, size }: {
-  size: "sm" | "md";
-  socials: NavRow[];
-  settingsSocials: { platform: string; url?: string }[];
-}) {
-  const sz = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
-  const list = socials.length > 0
-    ? socials.map((s) => ({ url: s.url, platform: s.social_platform ?? s.label }))
-    : settingsSocials.filter((s) => !!s.url).map((s) => ({ url: s.url!, platform: s.platform }));
-  if (list.length === 0) return null;
+function MoreMenu({ items }: { items: NavItem[] }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
   return (
-    <>
-      {list.map((s) => (
-        <a key={s.platform + s.url} href={s.url} aria-label={s.platform} target="_blank" rel="noopener noreferrer" className="hover:text-forest hover:text-gold">
-          <SocialIcon platform={s.platform} className={sz} />
-        </a>
-      ))}
-    </>
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="inline-flex items-center gap-1.5 text-foreground/80 hover:text-forest transition-colors whitespace-nowrap"
+      >
+        More <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full mt-3 w-56 bg-cream border border-border shadow-[0_20px_40px_-20px_rgba(15,61,46,0.25)] py-2"
+        >
+          {items.map((n) => (
+            <MoreItem key={n.label + n.url} item={n} onClick={() => setOpen(false)} />
+          ))}
+        </div>
+      )}
+    </div>
   );
+}
+
+function MoreItem({ item, onClick }: { item: NavItem; onClick: () => void }) {
+  const cls = "block px-4 py-2.5 text-[11px] tracking-[0.22em] uppercase text-foreground/80 hover:bg-secondary hover:text-forest";
+  if (item.external || /^https?:\/\//i.test(item.url)) {
+    return <a href={item.url} target="_blank" rel="noopener noreferrer" className={cls} onClick={onClick}>{item.label}</a>;
+  }
+  return <Link to={item.url as never} className={cls} activeProps={{ className: `${cls} text-forest` }} onClick={onClick}>{item.label}</Link>;
+}
+
+function CtaButton({ item, className = "", fullWidth = false, onClick }: { item: NavItem; className?: string; fullWidth?: boolean; onClick?: () => void }) {
+  const cls = `${fullWidth ? "w-full justify-center" : ""} inline-flex items-center bg-gold text-forest hover:bg-gold/90 px-5 py-3 text-[11px] tracking-[0.22em] uppercase font-medium ${className}`;
+  if (item.external || /^https?:\/\//i.test(item.url)) {
+    return <a href={item.url} className={cls} target="_blank" rel="noopener noreferrer" onClick={onClick}>{item.label}</a>;
+  }
+  return <Link to={item.url as never} className={cls} onClick={onClick}>{item.label}</Link>;
 }

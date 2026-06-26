@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getNavLinks, getSiteSettings } from "@/lib/api/website.functions";
 import { NewsletterForm } from "./NewsletterForm";
+import iccLogo from "@/assets/icc-logo.svg.asset.json";
 
 type NavRow = { label: string; url: string; location: string; external: boolean; social_platform?: string | null; sort_order: number };
 
@@ -85,9 +86,13 @@ export function SiteFooter() {
 
       <div className="container-icc grid gap-10 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Link to="/" className="inline-flex flex-col leading-tight">
-            <span className="font-display text-xl text-cream">Italian Culinary Consortium</span>
-            <span className="mt-1 text-[10px] tracking-[0.32em] uppercase text-gold">Italian Culinary Consortium</span>
+          <Link to="/" aria-label="ICC International — home" className="inline-flex">
+            <img
+              src={iccLogo.url}
+              alt="Italian Culinary Consortium International"
+              className="block h-12 w-auto brightness-0 invert"
+              draggable={false}
+            />
           </Link>
           <p className="mt-5 text-sm text-cream/70 max-w-xs">{description}</p>
           <div className="mt-6 flex items-center gap-4 text-cream/70">
