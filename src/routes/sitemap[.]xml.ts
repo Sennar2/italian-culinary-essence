@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = ""; // TODO: set once a project URL is assigned
+const BASE_URL = "https://italian-culinary-essence.lovable.app";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const paths = ["/","/about","/chapters","/leadership","/academy","/initiatives","/events","/news","/membership","/partners","/contact"];
+        const paths = ["/","/about","/chapters","/leadership","/academy","/initiatives","/events","/news","/membership","/partners","/contact","/gallery","/magazine","/podcasts"];
         let dynamic: string[] = [];
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
