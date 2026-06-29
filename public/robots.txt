@@ -3,3 +3,5 @@ Allow: /
 
 Disallow: /admin
 Disallow: /auth
+
+Sitemap: https://italian-culinary-essence.lovable.app/sitemap.xml

@@ -14,12 +14,15 @@ const chapterQuery = (slug: string) =>
 export const Route = createFileRoute("/chapters/$slug")({
   head: ({ loaderData }: { loaderData?: { city: string; country: string; summary?: string | null; slug: string } }) => {
     const title = loaderData ? `${loaderData.city}, ${loaderData.country} — ICC Chapter` : "ICC Chapter";
+    const fallbackDesc = loaderData
+      ? `Discover the ${loaderData.city} chapter of the Italian Culinary Consortium International — leadership, events and authentic Italian culinary culture in ${loaderData.country}.`
+      : "An international chapter of the Italian Culinary Consortium, safeguarding authentic Italian culinary culture worldwide.";
     return {
       meta: [
         { title },
-        { name: "description", content: loaderData?.summary ?? "ICC chapter" },
+        { name: "description", content: loaderData?.summary?.trim() || fallbackDesc },
         { property: "og:title", content: title },
-        { property: "og:description", content: loaderData?.summary ?? "" },
+        { property: "og:description", content: loaderData?.summary?.trim() || fallbackDesc },
         { property: "og:url", content: `/chapters/${loaderData?.slug ?? ""}` },
       ],
       links: [{ rel: "canonical", href: `/chapters/${loaderData?.slug ?? ""}` }],
