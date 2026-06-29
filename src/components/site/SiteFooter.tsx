@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, Youtube, Twitter, MapPin, Mail, Phone } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getNavLinks, getSiteSettings } from "@/lib/api/website.functions";
+import { getNavLinks, getSiteSettings } from "@/lib/api/website-public.functions";
 import { NewsletterForm } from "./NewsletterForm";
 import iccLogo from "@/assets/icc-logo.svg.asset.json";
 

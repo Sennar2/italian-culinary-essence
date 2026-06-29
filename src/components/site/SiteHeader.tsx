@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getNavLinks, getSiteSettings } from "@/lib/api/website.functions";
+import { getNavLinks, getSiteSettings } from "@/lib/api/website-public.functions";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Logo } from "./Logo";

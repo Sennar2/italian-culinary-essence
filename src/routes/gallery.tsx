@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { getGallery } from "@/lib/api/website.functions";
+import { getGallery } from "@/lib/api/website-public.functions";
 import { PageHeader } from "@/components/site/PageHeader";
 
 const galleryQuery = queryOptions({
