@@ -1,0 +1,21 @@
+# Italian Culinary Consortium International (ICC)
+
+> The official international organisation promoting, protecting and connecting authentic Italian culinary culture, products and professionals worldwide.
+
+ICC is a global non-profit body uniting chefs, producers, institutions and cultural ambassadors to safeguard the authenticity of Italian cuisine. We operate through international Chapters, an Academy, certifications, editorial publishing and cultural initiatives.
+
+## Pages
+
+- [About](/about): Mission, history and governance of the Consortium.
+- [Chapters](/chapters): International Chapters and global network.
+- [Leadership](/leadership): Board, council and ambassadors.
+- [Academy](/academy): Education, training and certification programmes.
+- [Initiatives](/initiatives): ICC Gusto, certifications and cultural projects.
+- [Events](/events): International gatherings, galas and symposia.
+- [News](/news): Editorial updates and announcements.
+- [Magazine](/magazine): ICC Gusto — the Consortium's editorial magazine.
+- [Podcasts](/podcasts): Conversations on Italian culinary culture.
+- [Gallery](/gallery): Photography from chapters, events and initiatives.
+- [Membership](/membership): How to join the Consortium.
+- [Partners](/partners): Founding members and institutional partners.
+- [Contact](/contact): How to reach the Consortium.
