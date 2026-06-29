@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createClient } from "@supabase/supabase-js";
 import type {} from "@tanstack/react-start";
+import type { Database } from "@/integrations/supabase/types";
 
 const BASE_URL = "https://italian-culinary-essence.lovable.app";
 
@@ -10,9 +12,15 @@ export const Route = createFileRoute("/sitemap.xml")({
         const paths = ["/","/about","/chapters","/leadership","/academy","/initiatives","/events","/news","/membership","/partners","/contact","/gallery","/magazine","/podcasts"];
         let dynamic: string[] = [];
         try {
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { data } = await supabaseAdmin.from("chapters").select("slug").eq("published", true);
-          dynamic = (data ?? []).map((r) => `/chapters/${r.slug}`);
+          const url = process.env.SUPABASE_URL;
+          const key = process.env.SUPABASE_PUBLISHABLE_KEY;
+          if (url && key) {
+            const supabasePublic = createClient<Database>(url, key, {
+              auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+            });
+            const { data } = await supabasePublic.from("chapters").select("slug").eq("published", true);
+            dynamic = (data ?? []).map((r) => `/chapters/${r.slug}`);
+          }
         } catch { /* skip on error */ }
 
         const urls = [...paths, ...dynamic].map((p) =>

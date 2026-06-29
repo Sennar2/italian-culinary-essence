@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { PageHeader } from "@/components/site/PageHeader";
 import { submitContact } from "@/lib/api/forms.functions";
-import { getSiteSettings } from "@/lib/api/website.functions";
+import { getSiteSettings } from "@/lib/api/website-public.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({

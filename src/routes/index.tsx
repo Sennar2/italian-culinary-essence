@@ -15,7 +15,7 @@ import {
   getSiteSettings,
   getActiveBanner,
   getGallery,
-} from "@/lib/api/website.functions";
+} from "@/lib/api/website-public.functions";
 import heroPasta from "@/assets/hero-pasta.jpg";
 import initiativesChef from "@/assets/initiatives-chef.jpg";
 
