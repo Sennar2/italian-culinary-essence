@@ -37,7 +37,7 @@ const homeQuery = queryOptions({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ICC International — Safeguarding the Authenticity of Italian Cuisine" },
+      { title: "ICC — Safeguarding Authentic Italian Cuisine" },
       { name: "description", content: "The Italian Culinary Consortium International promotes, protects and connects authentic Italian culinary culture across the globe." },
       { property: "og:title", content: "ICC International — Italian Culinary Consortium" },
       { property: "og:description", content: "Safeguarding the authenticity of Italian cuisine worldwide." },
@@ -93,7 +93,7 @@ function Hero({ settings }: { settings: Settings }) {
           <p className="font-display text-3xl text-gold/90">{eyebrow}</p>
           <FlagRule className="mt-4" />
           <h1 className="mt-6 font-display text-4xl leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-[64px]">
-            {titleRaw || (<>Italian Culinary Consortium{" "}<em className="italic text-forest">International</em></>)}
+            {titleRaw || (<>Italian Culinary Consortium —{" "}<em className="italic text-forest">Safeguarding Authentic Italian Cuisine</em></>)}
           </h1>
           <p className="mt-6 max-w-xl text-base md:text-[17px] leading-relaxed text-muted-foreground">{subtitle}</p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -223,7 +223,7 @@ function Mission() {
     <section className="bg-forest text-cream">
       <div className="container-icc py-14 md:py-20">
         <div className="text-center">
-          <p className="text-[11px] tracking-[0.28em] uppercase text-gold">Our Mission</p>
+          <h2 className="text-[11px] tracking-[0.28em] uppercase text-gold font-sans font-normal">Our Mission</h2>
         </div>
         <div className="mt-10 grid gap-10 md:grid-cols-2 lg:grid-cols-4 md:gap-6 md:divide-x md:divide-cream/15">
           {pillars.map(({ icon: Icon, title, body }) => (
