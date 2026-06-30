@@ -3,22 +3,17 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-async function isAdmin(userId: string) {
-  const sb = await admin();
+async function isAdmin(sb: any, userId: string) {
   const { data } = await sb.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
   return !!data;
 }
-async function guard(userId: string) { if (!(await isAdmin(userId))) throw new Error("Forbidden"); }
+async function guard(sb: any, userId: string) { if (!(await isAdmin(sb, userId))) throw new Error("Forbidden"); }
 
 /** Current member's record (auto-created by trigger). */
 export const getMyMember = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const sb = await admin();
+    const sb = context.supabase;
     const { data, error } = await sb
       .from("members")
       .select("*, membership_tiers(name, slug, billing_frequency, payment_link, benefits)")
@@ -27,8 +22,7 @@ export const getMyMember = createServerFn({ method: "GET" })
     if (error) throw error;
     if (!data) {
       // Defensive: create if trigger missed (e.g. older user)
-      const { data: u } = await sb.auth.admin.getUserById(context.userId);
-      await sb.from("members").insert({ user_id: context.userId, email: u.user?.email ?? null, status: "pending" });
+      await sb.from("members").insert({ user_id: context.userId, email: (context.claims as any)?.email ?? null, status: "pending" });
       const { data: again } = await sb.from("members").select("*, membership_tiers(name, slug, billing_frequency, payment_link, benefits)").eq("user_id", context.userId).maybeSingle();
       return again;
     }
@@ -48,7 +42,7 @@ export const updateMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => profileSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const sb = await admin();
+    const sb = context.supabase;
     const { error } = await sb.from("members").update(data).eq("user_id", context.userId);
     if (error) throw error;
     return { ok: true };
@@ -58,8 +52,8 @@ export const updateMyProfile = createServerFn({ method: "POST" })
 export const adminListMembers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data, error } = await sb
       .from("members")
       .select("*, membership_tiers(name)")
@@ -88,8 +82,8 @@ export const adminSaveMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => memberSaveSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { id, ...patch } = data;
     const { error } = await sb.from("members").update(patch).eq("id", id);
     if (error) throw error;
@@ -100,9 +94,9 @@ export const adminSendMemberReset = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { email: string }) => z.object({ email: z.string().email() }).parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
-    const { error } = await sb.auth.admin.generateLink({ type: "recovery", email: data.email });
+    const sb = context.supabase;
+    await guard(sb, context.userId);
+    const { error } = await sb.auth.resetPasswordForEmail(data.email);
     if (error) throw error;
     return { ok: true };
   });
@@ -111,8 +105,8 @@ export const adminMemberProgress = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { member_id: string }) => z.object({ member_id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const [{ data: progress }, { data: certs }] = await Promise.all([
       sb.from("member_course_progress").select("*, academy_modules(title), academy_lessons(title)").eq("member_id", data.member_id),
       sb.from("certificates").select("*, academy_modules(title)").eq("member_id", data.member_id),
