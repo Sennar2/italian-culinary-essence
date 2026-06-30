@@ -1,21 +1,35 @@
-## Plan to fix the persistent console error
+## Problem
+The error is not caused by the public website anymore. It is coming from admin save/list functions that still call the privileged backend client requiring `SUPABASE_SERVICE_ROLE_KEY`. In the current Lovable Cloud runtime, admin CMS actions should not require that key directly.
 
-The error is still present because the public website is importing server functions that dynamically import the privileged backend client. Those modules are also reachable from browser-rendered code, so the browser bundle attempts to evaluate `client.server.ts` and cannot see the server-only environment variables.
+## Plan
+1. **Replace admin service-role reads/writes with authenticated backend access**
+   - Update admin server functions to use the authenticated client from `requireSupabaseAuth` (`context.supabase`) instead of importing the privileged backend client.
+   - Keep the existing admin role check, but run it through the authenticated backend client/RPC rather than `supabaseAdmin`.
 
-### Fix
-1. Replace public read functions with a browser-safe/public backend client pattern:
-   - Use `SUPABASE_URL` + `SUPABASE_PUBLISHABLE_KEY` inside public server function handlers.
-   - Keep the privileged service-role client only for admin/protected operations.
+2. **Apply the fix across all admin modules that can show this toast**
+   - Content CMS: leadership, events, news, initiatives, partners, academy items, testimonials, settings.
+   - Website CMS: gallery, banners, nav links, featured images, uploads where possible.
+   - Membership/media CMS: tiers, magazine, podcasts, academy modules, members, access rules, enquiries/chapters as needed.
 
-2. Update these public content modules:
-   - `src/lib/api/public-content.functions.ts`
-   - public-read section of `src/lib/api/website.functions.ts`
-   - `src/routes/sitemap[.]xml.ts` if it uses the privileged client for public sitemap data.
+3. **Preserve security**
+   - Keep `requireSupabaseAuth` on admin server functions.
+   - Keep admin-only role enforcement before any admin mutation.
+   - Do not expose or ask for any service key.
 
-3. Preserve admin CMS behavior:
-   - Leave admin CRUD/upload functions using the service-role client after auth/admin guard.
-   - Do not change generated integration files.
+4. **Check database permissions if needed**
+   - If authenticated admin writes are blocked by table permissions/RLS, add a focused backend migration with explicit grants and admin-only policies using the existing `has_role()` function.
 
-4. Validate:
-   - Confirm the browser console no longer reports `Missing Supabase environment variable(s): SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY`.
-   - Check homepage/header/footer still load dynamic admin-controlled content.
+5. **Validate the exact failing flow**
+   - Re-test the admin save shown in your screenshot.
+   - Confirm the `Missing Supabase environment variable(s): SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY` toast no longer appears.
+   - Check no remaining client-reachable admin function imports the privileged backend client.
+
+```xml
+<presentation-actions>
+  <presentation-open-history>View History</presentation-open-history>
+</presentation-actions>
+```
+
+<presentation-actions>
+<presentation-link url="https://docs.lovable.dev/tips-tricks/troubleshooting">Troubleshooting docs</presentation-link>
+</presentation-actions>
