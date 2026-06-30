@@ -5,13 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
 
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-
-async function guard(userId: string) {
-  const sb = await admin();
+async function guard(sb: any, userId: string) {
   const { data } = await sb.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
   if (!data) throw new Error("Forbidden");
 }
@@ -47,8 +41,8 @@ export const adminUploadImage = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const folder = (data.folder ?? "uploads").replace(/[^a-z0-9-_]/gi, "");
     const safeName = data.filename.replace(/[^a-z0-9._-]/gi, "_");
     const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
@@ -67,8 +61,8 @@ export const adminDeleteImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { path: string }) => z.object({ path: z.string().min(1) }).parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     await sb.storage.from("media").remove([data.path]);
     return { ok: true };
   });
@@ -89,8 +83,8 @@ const gallerySchema = z.object({
 export const adminListGallery = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data, error } = await (sb as any).from("gallery_images").select("*").order("sort_order").order("created_at", { ascending: false });
     if (error) throw error;
     return (data ?? []) as any[];
@@ -100,8 +94,8 @@ export const adminSaveGallery = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => gallerySchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const payload = { ...data } as any;
     const id = payload.id; delete payload.id;
     const tbl = (sb as any).from("gallery_images");
@@ -114,8 +108,8 @@ export const adminDeleteGallery = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await (sb as any).from("gallery_images").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -140,8 +134,8 @@ const bannerSchema = z.object({
 export const adminListBanners = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data, error } = await (sb as any).from("banners").select("*").order("sort_order");
     if (error) throw error;
     return (data ?? []) as any[];
@@ -151,8 +145,8 @@ export const adminSaveBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => bannerSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const payload = { ...data } as any;
     const id = payload.id; delete payload.id;
     const tbl = (sb as any).from("banners");
@@ -165,8 +159,8 @@ export const adminDeleteBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await (sb as any).from("banners").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -191,8 +185,8 @@ const navSchema = z.object({
 export const adminListNav = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data, error } = await (sb as any).from("nav_links").select("*").order("location").order("sort_order");
     if (error) throw error;
     return (data ?? []) as any[];
@@ -202,8 +196,8 @@ export const adminSaveNav = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => navSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const payload = { ...data } as any;
     const id = payload.id; delete payload.id;
     const tbl = (sb as any).from("nav_links");
@@ -216,8 +210,8 @@ export const adminDeleteNav = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await (sb as any).from("nav_links").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -229,8 +223,8 @@ export const adminDeleteNav = createServerFn({ method: "POST" })
 export const adminListFeatured = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data, error } = await (sb as any).from("featured_images").select("*").order("page_key");
     if (error) throw error;
     return (data ?? []) as any[];
@@ -246,8 +240,8 @@ export const adminSaveFeatured = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await (sb as any)
       .from("featured_images")
       .upsert({ page_key: data.page_key, image_url: data.image_url, alt: data.alt }, { onConflict: "page_key" });
