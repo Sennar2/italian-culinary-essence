@@ -3,13 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-
-async function loadMemberAndAccess(userId: string) {
-  const sb = await admin();
+async function loadMemberAndAccess(sb: any, userId: string) {
   const { data: member } = await sb
     .from("members")
     .select("id, status, tier_id, full_name, email, membership_tiers(name, slug, billing_frequency, access_level)")
@@ -41,7 +35,8 @@ async function filterByAccess<T extends { id: string }>(
 export const myDashboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { sb, member } = await loadMemberAndAccess(context.userId);
+    const sb = context.supabase;
+    const { member } = await loadMemberAndAccess(sb, context.userId);
     if (!member) return { member: null };
     const tierId = (member.tier_id as string | null) ?? null;
     const [{ data: news }, { data: pods }, { data: events }, { data: mods }, { data: certs }] = await Promise.all([
@@ -70,7 +65,8 @@ export const myDashboard = createServerFn({ method: "GET" })
 export const myAcademy = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { sb, member } = await loadMemberAndAccess(context.userId);
+    const sb = context.supabase;
+    const { member } = await loadMemberAndAccess(sb, context.userId);
     const tierId = (member?.tier_id as string | null) ?? null;
     const { data: mods } = await sb.from("academy_modules").select("*").eq("published", true).order("sort_order");
     const filtered = await filterByAccess(sb, mods ?? [], "module", tierId);
@@ -87,7 +83,8 @@ export const myModule = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data, context }) => {
-    const { sb, member } = await loadMemberAndAccess(context.userId);
+    const sb = context.supabase;
+    const { member } = await loadMemberAndAccess(sb, context.userId);
     const tierId = (member?.tier_id as string | null) ?? null;
     const { data: mod } = await sb.from("academy_modules").select("*").eq("slug", data.slug).maybeSingle();
     if (!mod) throw new Error("Module not found");
@@ -107,7 +104,8 @@ export const myModule = createServerFn({ method: "POST" })
 export const myMagazine = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { sb, member } = await loadMemberAndAccess(context.userId);
+    const sb = context.supabase;
+    const { member } = await loadMemberAndAccess(sb, context.userId);
     const tierId = (member?.tier_id as string | null) ?? null;
     const { data: issues } = await sb.from("magazine_issues").select("*").eq("published", true).order("issue_date", { ascending: false });
     const filtered = await filterByAccess(sb, issues ?? [], "magazine_issue", tierId);
@@ -118,7 +116,8 @@ export const myIssue = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { slug: string }) => z.object({ slug: z.string() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { sb, member } = await loadMemberAndAccess(context.userId);
+    const sb = context.supabase;
+    const { member } = await loadMemberAndAccess(sb, context.userId);
     const tierId = (member?.tier_id as string | null) ?? null;
     const { data: issue } = await sb.from("magazine_issues").select("*").eq("slug", data.slug).maybeSingle();
     if (!issue) throw new Error("Not found");
@@ -131,7 +130,8 @@ export const myIssue = createServerFn({ method: "POST" })
 export const myPodcasts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { sb, member } = await loadMemberAndAccess(context.userId);
+    const sb = context.supabase;
+    const { member } = await loadMemberAndAccess(sb, context.userId);
     const tierId = (member?.tier_id as string | null) ?? null;
     const { data: eps } = await sb.from("podcast_episodes").select("*").eq("published", true).order("publish_date", { ascending: false });
     const filtered = await filterByAccess(sb, eps ?? [], "podcast", tierId);
@@ -141,7 +141,8 @@ export const myPodcasts = createServerFn({ method: "GET" })
 export const myNews = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { sb, member } = await loadMemberAndAccess(context.userId);
+    const sb = context.supabase;
+    const { member } = await loadMemberAndAccess(sb, context.userId);
     const tierId = (member?.tier_id as string | null) ?? null;
     const { data: rows } = await sb.from("news").select("*").eq("published", true).order("published_at", { ascending: false });
     const filtered = await filterByAccess(sb, rows ?? [], "news", tierId);
@@ -151,7 +152,8 @@ export const myNews = createServerFn({ method: "GET" })
 export const myEvents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { sb, member } = await loadMemberAndAccess(context.userId);
+    const sb = context.supabase;
+    const { member } = await loadMemberAndAccess(sb, context.userId);
     const tierId = (member?.tier_id as string | null) ?? null;
     const { data: rows } = await sb.from("events").select("*").eq("published", true).order("starts_at");
     const filtered = await filterByAccess(sb, rows ?? [], "event", tierId);

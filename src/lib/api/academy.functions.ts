@@ -3,12 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-async function guard(userId: string) {
-  const sb = await admin();
+async function guard(sb: any, userId: string) {
   const { data } = await sb.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
   if (!data) throw new Error("Forbidden");
 }
@@ -31,8 +26,8 @@ const moduleSchema = z.object({
 export const adminListModules = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data } = await sb.from("academy_modules").select("*").order("sort_order");
     return data ?? [];
   });
@@ -41,8 +36,8 @@ export const adminSaveModule = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => moduleSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const payload: any = { ...data }; const id = payload.id; delete payload.id;
     const { error } = id ? await sb.from("academy_modules").update(payload).eq("id", id) : await sb.from("academy_modules").insert(payload);
     if (error) throw error;
@@ -53,8 +48,8 @@ export const adminDeleteModule = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await sb.from("academy_modules").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -78,8 +73,8 @@ export const adminListLessons = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { module_id: string }) => z.object({ module_id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data: rows } = await sb.from("academy_lessons").select("*").eq("module_id", data.module_id).order("sort_order");
     return rows ?? [];
   });
@@ -88,8 +83,8 @@ export const adminSaveLesson = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => lessonSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const payload: any = { ...data }; const id = payload.id; delete payload.id;
     const { error } = id ? await sb.from("academy_lessons").update(payload).eq("id", id) : await sb.from("academy_lessons").insert(payload);
     if (error) throw error;
@@ -100,8 +95,8 @@ export const adminDeleteLesson = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await sb.from("academy_lessons").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -120,7 +115,7 @@ export const saveLessonProgress = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => progressSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const sb = await admin();
+    const sb = context.supabase;
     const { data: m } = await sb.from("members").select("id").eq("user_id", context.userId).maybeSingle();
     if (!m) throw new Error("Member not found");
     const completed_at = data.status === "completed" ? new Date().toISOString() : null;

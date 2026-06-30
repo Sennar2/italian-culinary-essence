@@ -2,13 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-
-async function requireAdminRole(userId: string) {
-  const sb = await admin();
+async function requireAdminRole(sb: any, userId: string) {
   const { data, error } = await sb.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
   if (error) throw error;
   return !!data;
@@ -17,13 +11,13 @@ async function requireAdminRole(userId: string) {
 export const meIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    return { isAdmin: await requireAdminRole(context.userId) };
+    return { isAdmin: await requireAdminRole(context.supabase, context.userId) };
   });
 
 export const claimFirstAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const sb = await admin();
+    const sb = context.supabase;
     const { count } = await sb.from("user_roles").select("*", { count: "exact", head: true }).eq("role", "admin");
     if ((count ?? 0) > 0) return { granted: false, reason: "An admin already exists." };
     const { error } = await sb.from("user_roles").insert({ user_id: context.userId, role: "admin" });
@@ -56,8 +50,8 @@ const chapterSchema = z.object({
 export const adminListChapters = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    if (!(await requireAdminRole(context.userId))) throw new Error("Forbidden");
-    const sb = await admin();
+    const sb = context.supabase;
+    if (!(await requireAdminRole(sb, context.userId))) throw new Error("Forbidden");
     const { data, error } = await sb.from("chapters").select("*").order("sort_order");
     if (error) throw error;
     return data ?? [];
@@ -67,8 +61,8 @@ export const adminSaveChapter = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: z.infer<typeof chapterSchema>) => chapterSchema.parse(d))
   .handler(async ({ data, context }) => {
-    if (!(await requireAdminRole(context.userId))) throw new Error("Forbidden");
-    const sb = await admin();
+    const sb = context.supabase;
+    if (!(await requireAdminRole(sb, context.userId))) throw new Error("Forbidden");
     if (data.id) {
       const { error } = await sb.from("chapters").update(data).eq("id", data.id);
       if (error) throw error;
@@ -83,8 +77,8 @@ export const adminDeleteChapter = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    if (!(await requireAdminRole(context.userId))) throw new Error("Forbidden");
-    const sb = await admin();
+    const sb = context.supabase;
+    if (!(await requireAdminRole(sb, context.userId))) throw new Error("Forbidden");
     const { error } = await sb.from("chapters").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -94,8 +88,8 @@ export const adminDeleteChapter = createServerFn({ method: "POST" })
 export const adminListEnquiries = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    if (!(await requireAdminRole(context.userId))) throw new Error("Forbidden");
-    const sb = await admin();
+    const sb = context.supabase;
+    if (!(await requireAdminRole(sb, context.userId))) throw new Error("Forbidden");
     const [n, c, m] = await Promise.all([
       sb.from("newsletter_subs").select("*").order("created_at", { ascending: false }).limit(200),
       sb.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(200),

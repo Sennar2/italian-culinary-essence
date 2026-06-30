@@ -3,19 +3,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-
-async function requireAdminRole(userId: string) {
-  const sb = await admin();
+async function requireAdminRole(sb: any, userId: string) {
   const { data } = await sb.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
   return !!data;
 }
 
-async function guard(userId: string) {
-  if (!(await requireAdminRole(userId))) throw new Error("Forbidden");
+async function guard(sb: any, userId: string) {
+  if (!(await requireAdminRole(sb, userId))) throw new Error("Forbidden");
 }
 
 // ---------- Generic CRUD factory ----------
@@ -27,8 +21,8 @@ function buildList(table: Table, orderBy: string, ascending = true) {
   return createServerFn({ method: "GET" })
     .middleware([requireSupabaseAuth])
     .handler(async ({ context }) => {
-      await guard(context.userId);
-      const sb = await admin();
+      const sb = context.supabase;
+      await guard(sb, context.userId);
       const { data, error } = await (sb as any).from(table).select("*").order(orderBy, { ascending });
       if (error) throw error;
       return (data ?? []) as any[];
@@ -40,8 +34,8 @@ function buildSave(table: Table, schema: z.ZodType<Record<string, unknown> & { i
     .middleware([requireSupabaseAuth])
     .inputValidator((d: unknown) => schema.parse(d))
     .handler(async ({ data, context }) => {
-      await guard(context.userId);
-      const sb = await admin();
+      const sb = context.supabase;
+      await guard(sb, context.userId);
       const payload = { ...(data as Record<string, unknown>) };
       const id = payload.id as string | undefined;
       delete payload.id;
@@ -62,8 +56,8 @@ function buildDelete(table: Table) {
     .middleware([requireSupabaseAuth])
     .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
     .handler(async ({ data, context }) => {
-      await guard(context.userId);
-      const sb = await admin();
+      const sb = context.supabase;
+      await guard(sb, context.userId);
       const { error } = await (sb as any).from(table).delete().eq("id", data.id);
       if (error) throw error;
       return { ok: true };
@@ -142,8 +136,8 @@ export const adminDeleteTestimonials = buildDelete("testimonials");
 export const adminDashboardStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const head = { count: "exact" as const, head: true };
     const nowIso = new Date().toISOString();
     const monthAgo = new Date(Date.now() - 30 * 86_400_000).toISOString();
@@ -178,8 +172,8 @@ export const adminDashboardStats = createServerFn({ method: "GET" })
 export const adminGetSettings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data, error } = await sb.from("site_settings").select("data").eq("id", 1).maybeSingle();
     if (error) throw error;
     return (data?.data ?? {}) as any;
@@ -189,8 +183,8 @@ export const adminSaveSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { data: Record<string, unknown> }) => z.object({ data: z.record(z.string(), z.unknown()) }).parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await sb.from("site_settings").upsert({ id: 1, data: data.data as any });
     if (error) throw error;
     return { ok: true };
