@@ -4,12 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-async function guard(userId: string) {
-  const sb = await admin();
+async function guard(sb: any, userId: string) {
   const { data } = await sb.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
   if (!data) throw new Error("Forbidden");
 }
@@ -43,8 +38,8 @@ export const listPublicIssues = createServerFn({ method: "GET" }).handler(async 
 export const adminListIssues = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data, error } = await sb.from("magazine_issues").select("*").order("issue_date", { ascending: false });
     if (error) throw error;
     return (data ?? []) as any[];
@@ -54,8 +49,8 @@ export const adminSaveIssue = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => issueSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const payload: any = { ...data }; const id = payload.id; delete payload.id;
     const { error } = id ? await sb.from("magazine_issues").update(payload).eq("id", id) : await sb.from("magazine_issues").insert(payload);
     if (error) throw error;
@@ -66,8 +61,8 @@ export const adminDeleteIssue = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await sb.from("magazine_issues").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -90,8 +85,8 @@ export const adminListArticles = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { issue_id: string }) => z.object({ issue_id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data: rows } = await sb.from("magazine_articles").select("*").eq("issue_id", data.issue_id).order("sort_order");
     return rows ?? [];
   });
@@ -100,8 +95,8 @@ export const adminSaveArticle = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => articleSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const payload: any = { ...data }; const id = payload.id; delete payload.id;
     const { error } = id ? await sb.from("magazine_articles").update(payload).eq("id", id) : await sb.from("magazine_articles").insert(payload);
     if (error) throw error;
@@ -112,8 +107,8 @@ export const adminDeleteArticle = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await sb.from("magazine_articles").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -149,8 +144,8 @@ export const listPublicPodcasts = createServerFn({ method: "GET" }).handler(asyn
 export const adminListPodcasts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { data } = await sb.from("podcast_episodes").select("*").order("publish_date", { ascending: false });
     return data ?? [];
   });
@@ -159,8 +154,8 @@ export const adminSavePodcast = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => podSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const payload: any = { ...data }; const id = payload.id; delete payload.id;
     const { error } = id ? await sb.from("podcast_episodes").update(payload).eq("id", id) : await sb.from("podcast_episodes").insert(payload);
     if (error) throw error;
@@ -171,8 +166,8 @@ export const adminDeletePodcast = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const { error } = await sb.from("podcast_episodes").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };

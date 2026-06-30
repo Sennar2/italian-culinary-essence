@@ -3,12 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-async function guard(userId: string) {
-  const sb = await admin();
+async function guard(sb: any, userId: string) {
   const { data } = await sb.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
   if (!data) throw new Error("Forbidden");
 }
@@ -20,8 +15,8 @@ export const getAccessMatrix = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { content_type: string }) => z.object({ content_type: ContentType }).parse(d))
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     const map: Record<string, { table: string; label: string }> = {
       module: { table: "academy_modules", label: "title" },
       news: { table: "news", label: "title" },
@@ -49,8 +44,8 @@ export const setAccess = createServerFn({ method: "POST" })
     z.object({ content_type: ContentType, content_id: z.string().uuid(), tier_id: z.string().uuid(), allowed: z.boolean() }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await guard(context.userId);
-    const sb = await admin();
+    const sb = context.supabase;
+    await guard(sb, context.userId);
     if (data.allowed) {
       await sb.from("content_access").upsert(
         { content_type: data.content_type, content_id: data.content_id, tier_id: data.tier_id },
